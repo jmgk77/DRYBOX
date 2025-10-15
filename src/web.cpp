@@ -14,6 +14,7 @@ void __handle_root(AsyncWebServerRequest* request) {
   String s;
 
   //***
+  heater_on();
 
   // buttons
   s += __add_buttons();
@@ -36,6 +37,7 @@ void __handle_info(AsyncWebServerRequest* request) {
   s += html_dump_esp8266();
   s += html_dump_config();
   s += html_dump_fs();
+  heater_off();
 
   // buttons
   s += __add_buttons();
