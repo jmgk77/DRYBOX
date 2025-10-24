@@ -10,11 +10,20 @@ extern char boot_time[32];
 
 String __add_buttons() { return String(html_buttons); }
 
+String __get_status() {
+  String s = "<div>";
+  s += "HEATER:" + String(get_heater() ? "ON" : "OFF") + "<br>";
+  s += "FAN:" + String(get_fan() ? "ON" : "OFF") + "<br>";
+  s += "TEMPERATURE:" + String(get_temperature()) + "<br>";
+  s += "HUMIDITY:" + String(get_humidity()) + "<br>";
+  s += "<br></div>";
+  return s;
+}
+
 void __handle_root(AsyncWebServerRequest* request) {
   String s;
 
   //***
-  heater_on();
 
   // buttons
   s += __add_buttons();
@@ -24,6 +33,8 @@ void __handle_root(AsyncWebServerRequest* request) {
 
 void __handle_info(AsyncWebServerRequest* request) {
   String s;
+
+  s += __get_status();
   //
   s += "IP: <i>" + WiFi.localIP().toString() + "</i><br>\n";
   s += "Data de ínicio: <i>" + String(boot_time) + "</i><br>\n";
@@ -37,7 +48,6 @@ void __handle_info(AsyncWebServerRequest* request) {
   s += html_dump_esp8266();
   s += html_dump_config();
   s += html_dump_fs();
-  heater_off();
 
   // buttons
   s += __add_buttons();
@@ -210,7 +220,7 @@ void init_web() {
     delay(1 * 1000);
   }
 #ifdef DEBUG
-  Serial.println("Got IP: " + WiFi.localIP().toString());
+  Serial.println("* WIFI OK\n  Got IP: " + WiFi.localIP().toString());
 #endif
 
   // install www handlers

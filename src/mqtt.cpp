@@ -25,6 +25,9 @@ void init_mqtt() {
   mqtt.attach_scheduled(MQTT_ANNOUNCE_TIMER, []() { mqtt_announce = true; });
 
   mqtt_client->subscribe(String(config.device_name) + "/COMMAND", __callback);
+#ifdef DEBUG
+  Serial.println("* MQTT OK");
+#endif
 }
 
 void handle_mqtt() {

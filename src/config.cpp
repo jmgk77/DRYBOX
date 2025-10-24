@@ -41,13 +41,13 @@ bool __verify_config() {
   unsigned int checksum = __calculate_config_checkum();
   if ((config.sign != config_SIGNATURE) || (config.checksum != checksum)) {
 #ifdef DEBUG
-    Serial.printf("config NOK (want %08x has %08x)\n", config.checksum,
+    Serial.printf("* CONFIG NOK (want %08x has %08x)\n", config.checksum,
                   checksum);
 #endif
     return false;
   } else {
 #ifdef DEBUG
-    Serial.println("config OK");
+    Serial.println("* CONFIG OK");
 #endif
     return true;
   }

@@ -10,7 +10,7 @@ void __get_time_callback() {
     time_t t = time(NULL);
     strncpy(boot_time, ctime(&t), sizeof(boot_time));
 #ifdef DEBUG
-    Serial.print("Current date: ");
+    Serial.print("* NTTP OK\n  Current date: ");
     Serial.print(boot_time);
 #endif
 

@@ -12,11 +12,13 @@ void setup() {
 
   init_config();
 
-#ifdef DEBUG
+#ifdef DEBUG_HW
   dump_esp8266();
   dump_fs();
   dump_config();
 #endif
+
+  init_oled();
 
   init_time();
 
@@ -25,7 +27,10 @@ void setup() {
   init_mqtt();
 
   init_relays();
-  
+
+  init_bme280();
+
+  oled_clear();
 }
 
 void loop() {
