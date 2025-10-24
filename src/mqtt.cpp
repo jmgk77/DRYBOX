@@ -45,5 +45,12 @@ void handle_mqtt() {
     // send IP
     mqtt_client->publish(String(config.device_name) + "/IP",
                          WiFi.localIP().toString());
+
+    // send status
+    mqtt_client->publish(String(config.device_name) + "/TEMP",
+                         String(get_temperature()));
+    mqtt_client->publish(String(config.device_name) + "/HUMIDITY",
+                         String(get_humidity()));
+    // mqtt_client->publish(String(config.device_name) + "/STATUS", "IDLE");
   }
 }

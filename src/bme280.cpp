@@ -29,7 +29,7 @@ void init_bme280() {
   }
 
   __get_th_callback();
-  get_th.attach_scheduled(60, __get_th_callback);
+  get_th.attach_scheduled(TH_SENSOR_READ, __get_th_callback);
 }
 
 float get_temperature() { return temperature; }

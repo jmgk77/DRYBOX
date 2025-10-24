@@ -37,7 +37,7 @@
 #define DEFAULT_DEVICE_NAME "DRYBOX"
 
 #define DEBUG
-#define DEBUG_SENSORS
+// #define DEBUG_SENSORS
 // #define DEBUG_HW
 // #define ENABLE_EXTRA_DISCOVERY
 // #define WWW_FILESERVER
