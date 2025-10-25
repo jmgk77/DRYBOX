@@ -7,6 +7,7 @@ ESPAsyncHTTPUpdateServer updateServer;
 
 extern struct config_data config;
 extern char boot_time[32];
+extern bool oled_update_pending;
 
 String __add_buttons() { return String(html_buttons); }
 
@@ -23,7 +24,23 @@ String __get_status() {
 void __handle_root(AsyncWebServerRequest* request) {
   String s;
 
+  s = +"<script>const t = [";
+  // for (int i = 0; i < count; i++) {
+  //   snprintf_P(buf, sizeof(buf), "%.01f,", th_info[start + i].temperature);
+  //   server.sendContent(buf);
+  // }
+  s += "];\nconst h = [";
+  // for (int i = 0; i < count; i++) {
+  //   snprintf_P(buf, sizeof(buf), "%.01f,", th_info[start + i].humidity);
+  //   server.sendContent(buf);
+  // }
+
+  s += "];";
+
+  s += String(html_js);
+
   //***
+  s += String(html_commands);
 
   // buttons
   s += __add_buttons();
@@ -96,6 +113,25 @@ void __handle_config(AsyncWebServerRequest* request) {
   }
 }
 
+void __handle_command(AsyncWebServerRequest* request) {
+  if (request->hasParam("status")) {
+    //
+    oled_update_pending = true;
+  } else if (request->hasParam("fan_off")) {
+    fan_off();
+  } else if (request->hasParam("fan_on")) {
+    fan_on();
+  } else if (request->hasParam("heater_off")) {
+    heater_off();
+  } else if (request->hasParam("heater_on")) {
+    heater_on();
+  } else {  // default
+  }
+
+  request->send(200, "text/html",
+                "<meta http-equiv='refresh' content='0; url=/' />");
+}
+
 void __handle_reboot(AsyncWebServerRequest* request) {
   request->send(200, "text/html",
                 "<meta http-equiv='refresh' content='15; url=/' />");
@@ -135,21 +171,21 @@ void __handle_files(AsyncWebServerRequest* request) {
     // download
     String fileName = request->getParam("n")->value();
 #ifdef DEBUG
-    Serial.printf("Download: %s\n", fileName.c_str());
+    Serial.printf("### Download: %s\n", fileName.c_str());
 #endif
     request->send(LittleFS, fileName, "application/octet-stream");
   } else if (request->hasParam("x")) {
     // delete
     String fileName = request->getParam("x")->value();
 #ifdef DEBUG
-    Serial.printf("Delete: %s\n", fileName.c_str());
+    Serial.printf("### Delete: %s\n", fileName.c_str());
 #endif
     LittleFS.remove(fileName);
     request->redirect("/files");
   } else {
     // dir
 #ifdef DEBUG
-    Serial.println("Dir:\n");
+    Serial.println("### Dir:\n");
 #endif
     String s;
     s += "<div style='border: 1px solid black'>\n<div style='border: 1px solid "
@@ -159,7 +195,7 @@ void __handle_files(AsyncWebServerRequest* request) {
     while (dir.next()) {
       if (dir.isFile()) {
 #ifdef DEBUG
-        Serial.printf("\t%s\n", dir.fileName().c_str());
+        Serial.printf("### \t%s\n", dir.fileName().c_str());
 #endif
         s += "<a download='" + dir.fileName() +
              "' href='files?n=" + dir.fileName() + "'>" + dir.fileName() +
@@ -185,17 +221,18 @@ void __handle_upload(AsyncWebServerRequest* request, String filename,
                      size_t index, uint8_t* data, size_t len, bool final) {
   if (!index) {
 #ifdef DEBUG
-    Serial.printf("UploadStart: %s\n", filename.c_str());
+    Serial.printf("### UploadStart: %s\n", filename.c_str());
 #endif
     request->_tempFile = LittleFS.open("/" + filename, "w");
   }
 #ifdef DEBUG
-  Serial.printf("UploadMiddle: %u bytes\n", len);
+  Serial.printf("### UploadMiddle: %u bytes\n", len);
 #endif
   request->_tempFile.write(data, len);
   if (final) {
 #ifdef DEBUG
-    Serial.printf("UploadEnd: %s size: %u\n", filename.c_str(), index + len);
+    Serial.printf("### UploadEnd: %s size: %u\n", filename.c_str(),
+                  index + len);
 #endif
     request->_tempFile.close();
     request->redirect("/files");
@@ -230,6 +267,7 @@ void init_web() {
   server.on("/info", HTTP_ANY, __handle_info);
   server.on("/reboot", HTTP_ANY, __handle_reboot);
   server.on("/reset", HTTP_ANY, __handle_reset);
+  server.on("/command", HTTP_ANY, __handle_command);
 #ifdef WWW_FILESERVER
   server.on("/files", HTTP_ANY, __handle_files);
   server.on(

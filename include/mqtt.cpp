@@ -1,5 +1,7 @@
 #include "main.h"
 
+#define MQTT_ANNOUNCE_TIMER 5
+
 PicoMQTT::Client* mqtt_client;
 
 Ticker mqtt;

@@ -31,10 +31,14 @@ void setup() {
   init_bme280();
 
   oled_clear();
+
+  init_logger();
 }
 
 void loop() {
   handle_web();
 
   handle_mqtt();
+
+  handle_oled();
 }

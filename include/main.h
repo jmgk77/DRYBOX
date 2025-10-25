@@ -23,21 +23,26 @@
 #include <PicoMQTT.h>
 #include <Ticker.h>
 
-#include "bme280.h"
-#include "config.h"
-#include "datetime.h"
-#include "dump.h"
-#include "html.h"
-#include "mqtt.h"
-#include "oled.h"
-#include "relays.h"
-#include "version.h"
-#include "web.h"
-
 #define DEFAULT_DEVICE_NAME "DRYBOX"
 
 #define DEBUG
 // #define DEBUG_SENSORS
 // #define DEBUG_HW
 // #define ENABLE_EXTRA_DISCOVERY
-// #define WWW_FILESERVER
+#define WWW_FILESERVER
+
+//
+#include "html.h"
+#include "oled.h"
+#include "version.h"
+
+//
+#include "bme280.cpp"
+#include "config.cpp"
+#include "datetime.cpp"
+#include "dump.cpp"
+#include "logger.cpp"
+#include "mqtt.cpp"
+#include "oled.cpp"
+#include "relays.cpp"
+#include "web.cpp"

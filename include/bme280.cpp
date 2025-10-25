@@ -1,5 +1,7 @@
 #include "main.h"
 
+#define TH_SENSOR_READ 1
+
 Adafruit_BME280 bme;
 Ticker get_th;
 

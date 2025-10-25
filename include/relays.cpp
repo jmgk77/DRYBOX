@@ -1,18 +1,10 @@
 #include "main.h"
 
+#define HEATER_PIN 16  // D0
+#define FAN_PIN 2      // D4
+
 bool heater_status;
 bool fan_status;
-
-void init_relays() {
-  pinMode(HEATER_PIN, OUTPUT);
-  pinMode(FAN_PIN, OUTPUT);
-
-  heater_off();
-  fan_off();
-#ifdef DEBUG
-  Serial.println("* RELAYS OK");
-#endif
-}
 
 void heater_on() {
   digitalWrite(HEATER_PIN, LOW);
@@ -49,3 +41,14 @@ void fan_off() {
 };
 
 bool get_fan() { return fan_status; }
+
+void init_relays() {
+  pinMode(HEATER_PIN, OUTPUT);
+  pinMode(FAN_PIN, OUTPUT);
+
+  heater_off();
+  fan_off();
+#ifdef DEBUG
+  Serial.println("* RELAYS OK");
+#endif
+}
