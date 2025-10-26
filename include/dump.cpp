@@ -28,8 +28,6 @@ const char FS_INFO[] PROGMEM =
 
 const char config_INFO[] PROGMEM =
     "CONFIG\n"
-    "config.sign: %c\n"
-    "config.checksum: %08x\n"
     "config.device_name: %s\n"
     "config.mqtt_server_ip: %s\n"
     "config.mqtt_server_port: %d\n"
@@ -60,8 +58,8 @@ String __dump_fs() {
 
 String __dump_config() {
   char buf[1024];
-  snprintf(buf, sizeof(buf), config_INFO, config.sign, config.checksum,
-           config.device_name, config.mqtt_server_ip, config.mqtt_server_port,
+  snprintf(buf, sizeof(buf), config_INFO, config.device_name,
+           config.mqtt_server_ip, config.mqtt_server_port,
            config.mqtt_server_username, config.mqtt_server_password);
   return String(buf);
 }

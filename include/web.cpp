@@ -5,43 +5,64 @@ AsyncWebServer server(80);
 AsyncWiFiManager wm(&server, &dns);
 ESPAsyncHTTPUpdateServer updateServer;
 
+// Declarações de função (Forward declarations) para resolver dependências
+void start_dry_cycle();
+void stop_dry_cycle();
+String get_dry_cycle_state_str();
+String get_remaining_time_str();
+
 String __add_buttons() { return String(html_buttons); }
 
 void __handle_root(AsyncWebServerRequest* request) {
   AsyncResponseStream* response = request->beginResponseStream("text/html");
 
   response->print(html_header);
-  response->print(html_root);
+
+  String root_page = html_root;
+  root_page.replace("%STATE%", get_dry_cycle_state_str());
+  root_page.replace("%TIME%", get_remaining_time_str());
+  response->print(root_page);
   response->print(html_commands);
   response->print(html_buttons);
 
+  // create javascript variables
   String t = "const t = [";
   String h = "const h = [";
-  String l = "const l = [";
 
-  //*** read file
+  // Read historical data from the binary log file
+  File f = LittleFS.open(th_log_name, "r");
+  if (f) {
+    // Pula para a posição onde começam os últimos 180 registros, a partir do
+    // final do arquivo
+    f.seek(-sizeof(TH_INFO) * 180, SeekEnd);
 
-  // last sensor reads
+    TH_INFO history_buffer;
+    while (f.read((uint8_t*)&history_buffer, sizeof(TH_INFO)) ==
+           sizeof(TH_INFO)) {
+      t += history_buffer.temperature;
+      h += history_buffer.humidity;
+      t += ",";
+      h += ",";
+    }
+    f.close();
+  }
+
+  // Append last sensor reads from memory
   if (th_index > 0) {
     for (unsigned int i = 0; i < th_index; i++) {
       t += th_info[i].temperature;
       h += th_info[i].humidity;
-      l += i;
-      if (i < th_index - 1) {
-        t += ",";
-        h += ",";
-        l += ",";
-      }
+      t += ",";
+      h += ",";
     }
   }
+  // end variables
   t += "];";
   h += "];";
-  l += "];";
 
   response->print("<script>");
   response->print(t);
   response->print(h);
-  response->print(l);
   response->print(html_js);
 
   response->print(html_footer);
@@ -120,9 +141,10 @@ void __handle_config(AsyncWebServerRequest* request) {
 }
 
 void __handle_command(AsyncWebServerRequest* request) {
-  if (request->hasParam("status")) {
-    //
-    oled_update_pending = true;
+  if (request->hasParam("start_cycle")) {
+    start_dry_cycle();
+  } else if (request->hasParam("stop_cycle")) {
+    stop_dry_cycle();
   } else if (request->hasParam("fan_off")) {
     fan_off();
   } else if (request->hasParam("fan_on")) {

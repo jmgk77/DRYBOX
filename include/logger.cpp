@@ -2,7 +2,7 @@
 
 #define MAX_TH_INFO 60
 
-#define TH_LOG_TIME 5
+#define TH_LOG_TIME 60
 
 struct TH_INFO {
   float temperature;
@@ -15,14 +15,12 @@ char th_log_name[64];
 
 Ticker th;
 
-void __dump_csv() {
+void __dump_log() {
   File f = LittleFS.open(th_log_name, "a");
 
-  // loop database
   if (f) {
-    for (unsigned int i = 0; i < sizeof(th_info) / sizeof(th_info[0]); i++) {
-      f.printf("%.01f, %.01f\n", th_info[i].temperature, th_info[i].humidity);
-    }
+    // Write the entire buffer as a binary block
+    f.write((uint8_t*)th_info, sizeof(th_info));
     f.close();
   } else {
 #ifdef DEBUG
@@ -32,6 +30,15 @@ void __dump_csv() {
   th_index = 0;
 }
 
+void __th_callback() {
+  th_info[th_index].temperature = get_temperature();
+  th_info[th_index].humidity = get_humidity();
+  th_index++;
+  if (th_index >= MAX_TH_INFO) {
+    __dump_log();
+  }
+}
+
 void init_logger() {
   struct tm now;
   time_t t = time(NULL);
@@ -39,30 +46,12 @@ void init_logger() {
 
   // LittleFS.format();
 
-  // create csv name
-  strftime(th_log_name, sizeof(th_log_name), "/%Y%m%d_%H%M.csv", &now);
-
-  // create csv file
-  File f = LittleFS.open(th_log_name, "w");
-  if (f) {
-    f.printf("Temperatura, Umidade\n");
-    f.close();
-  } else {
-#ifdef DEBUG
-    Serial.println("* LOGGER NOK");
-#endif
-    return;
-  }
+  // create binary log name
+  strftime(th_log_name, sizeof(th_log_name), "/%Y%m%d_%H%M.bin", &now);
 
   // save
-  th.attach_scheduled(TH_LOG_TIME, []() {
-    th_info[th_index].temperature = get_temperature();
-    th_info[th_index].humidity = get_humidity();
-    th_index++;
-    if (th_index >= MAX_TH_INFO) {
-      __dump_csv();
-    }
-  });
+  __th_callback();
+  th.attach_scheduled(TH_LOG_TIME, __th_callback);
 
 #ifdef DEBUG
   Serial.println("* LOGGER OK (" + String(th_log_name) + ")");

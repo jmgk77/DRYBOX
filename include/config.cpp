@@ -1,78 +1,79 @@
 #include "main.h"
 
-#define config_SIGNATURE 'J'
+#define CONFIG_FILE "/config.json"
 
 struct config_data {
-  unsigned char sign = config_SIGNATURE;
-  unsigned int checksum;
-  //
   char device_name[32];
   char mqtt_server_ip[64];
   unsigned int mqtt_server_port;
   char mqtt_server_username[64];
   char mqtt_server_password[64];
 };
-
 struct config_data config;
 
-unsigned int __calculate_config_checkum() {
-  //
-  unsigned char buffer[sizeof(config_data)];
-  CRC32 crc;
-
-  // save old checksum
-  unsigned int temp_checksum = config.checksum;
-  config.checksum = 0;
-
-  // copy config data
-  memcpy(buffer, &config, sizeof(config_data));
-
-  for (unsigned int i = 0; i < sizeof(config_data); i++) {
-    crc.update(buffer[i]);
+void save_config() {
+  File configFile = LittleFS.open(CONFIG_FILE, "w");
+  if (!configFile) {
+#ifdef DEBUG
+    Serial.println("Failed to open config file for writing");
+#endif
+    return;
   }
 
-  // restore old checksum
-  config.checksum = temp_checksum;
-  return crc.finalize();
-}
+  JsonDocument doc;
+  doc["device_name"] = config.device_name;
+  doc["mqtt_server_ip"] = config.mqtt_server_ip;
+  doc["mqtt_server_port"] = config.mqtt_server_port;
+  doc["mqtt_server_username"] = config.mqtt_server_username;
+  doc["mqtt_server_password"] = config.mqtt_server_password;
 
-void save_config() {
-  config.checksum = __calculate_config_checkum();
-  EEPROM.put(0, config);
-  EEPROM.commit();
+  if (serializeJson(doc, configFile) == 0) {
+#ifdef DEBUG
+    Serial.println("Failed to write to config file");
+#endif
+  }
+  configFile.close();
 }
 
 void default_config() {
   config = {};
-  config.sign = config_SIGNATURE;
   strcpy(config.device_name, DEFAULT_DEVICE_NAME);
   config.mqtt_server_port = 1883;
-  config.checksum = __calculate_config_checkum();
-}
-
-bool __verify_config() {
-  unsigned int checksum = __calculate_config_checkum();
-  if ((config.sign != config_SIGNATURE) || (config.checksum != checksum)) {
-#ifdef DEBUG
-    Serial.printf("* CONFIG NOK (want %08x has %08x)\n", config.checksum,
-                  checksum);
-#endif
-    return false;
-  } else {
-#ifdef DEBUG
-    Serial.println("* CONFIG OK");
-#endif
-    return true;
-  }
 }
 
 void init_config() {
-  // init config
-  EEPROM.begin(sizeof(config_data));
-
-  // if there's valid config config, load it
-  EEPROM.get(0, config);
-  if (!__verify_config()) {
+  if (LittleFS.exists(CONFIG_FILE)) {
+    // File exists, reading values
+    File configFile = LittleFS.open(CONFIG_FILE, "r");
+    if (configFile) {
+      JsonDocument doc;
+      DeserializationError error = deserializeJson(doc, configFile);
+      if (error) {
+#ifdef DEBUG
+        Serial.println(
+            "Failed to read config file, using default configuration");
+#endif
+        default_config();
+      } else {
+        strlcpy(config.device_name, doc["device_name"] | DEFAULT_DEVICE_NAME,
+                sizeof(config.device_name));
+        strlcpy(config.mqtt_server_ip, doc["mqtt_server_ip"] | "",
+                sizeof(config.mqtt_server_ip));
+        config.mqtt_server_port = doc["mqtt_server_port"] | 1883;
+        strlcpy(config.mqtt_server_username, doc["mqtt_server_username"] | "",
+                sizeof(config.mqtt_server_username));
+        strlcpy(config.mqtt_server_password, doc["mqtt_server_password"] | "",
+                sizeof(config.mqtt_server_password));
+      }
+      configFile.close();
+    }
+  } else {
+    // File does not exist, create it with default values
     default_config();
+    save_config();
   }
+
+#ifdef DEBUG
+  Serial.println("* CONFIG OK");
+#endif
 }

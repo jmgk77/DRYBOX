@@ -9,7 +9,7 @@
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_Sensor.h>
 #include <Arduino.h>
-#include <CRC32.h>
+#include <ArduinoJson.h>
 #include <ESP8266LLMNR.h>
 #include <ESP8266NetBIOS.h>
 #include <ESP8266WiFi.h>
@@ -18,7 +18,6 @@
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <ESPAsyncWiFiManager.h>
-#include <ESP_EEPROM.h>
 #include <LittleFS.h>
 #include <PicoMQTT.h>
 #include <Ticker.h>
@@ -40,6 +39,7 @@
 #include "bme280.cpp"
 #include "config.cpp"
 #include "datetime.cpp"
+#include "dry.cpp"
 #include "dump.cpp"
 #include "logger.cpp"
 #include "mqtt.cpp"
