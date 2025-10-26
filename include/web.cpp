@@ -25,12 +25,11 @@ void __handle_root(AsyncWebServerRequest* request) {
   response->print(html_commands);
   response->print(html_buttons);
 
-  // create javascript variables
-  String t = "const t = [";
-  String h = "const h = [";
+  response->print("<script>const t=[");
 
   // Read historical data from the binary log file
   File f = LittleFS.open(th_log_name, "r");
+  bool first = true;
   if (f) {
     // Pula para a posição onde começam os últimos 180 registros, a partir do
     // final do arquivo
@@ -39,10 +38,9 @@ void __handle_root(AsyncWebServerRequest* request) {
     TH_INFO history_buffer;
     while (f.read((uint8_t*)&history_buffer, sizeof(TH_INFO)) ==
            sizeof(TH_INFO)) {
-      t += history_buffer.temperature;
-      h += history_buffer.humidity;
-      t += ",";
-      h += ",";
+      if (!first) response->print(",");
+      response->print(history_buffer.temperature);
+      first = false;
     }
     f.close();
   }
@@ -50,19 +48,37 @@ void __handle_root(AsyncWebServerRequest* request) {
   // Append last sensor reads from memory
   if (th_index > 0) {
     for (unsigned int i = 0; i < th_index; i++) {
-      t += th_info[i].temperature;
-      h += th_info[i].humidity;
-      t += ",";
-      h += ",";
+      if (!first) response->print(",");
+      response->print(th_info[i].temperature);
+      first = false;
     }
   }
-  // end variables
-  t += "];";
-  h += "];";
+  response->print("];const h=[");
 
-  response->print("<script>");
-  response->print(t);
-  response->print(h);
+  // Reset first flag for humidity
+  first = true;
+  // We need to re-read the data for humidity. This is not ideal but avoids
+  // storing all data in memory. A better long-term solution might be to
+  // restructure the data or the page logic.
+  if (f && f.seek(-sizeof(TH_INFO) * 180, SeekEnd)) {
+    TH_INFO history_buffer;
+    while (f.read((uint8_t*)&history_buffer, sizeof(TH_INFO)) ==
+           sizeof(TH_INFO)) {
+      if (!first) response->print(",");
+      response->print(history_buffer.humidity);
+      first = false;
+    }
+    f.close();
+  }
+  if (th_index > 0) {
+    for (unsigned int i = 0; i < th_index; i++) {
+      if (!first) response->print(",");
+      response->print(th_info[i].humidity);
+      first = false;
+    }
+  }
+  response->print("];");
+
   response->print(html_js);
 
   response->print(html_footer);
