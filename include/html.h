@@ -38,63 +38,25 @@
       String(BTN) + "'></form>\n";
 
 const char html_header[] = R""""(
-<!DOCTYPE html>
-<html lang='pt-br'>
-<head>
-<meta charset='UTF-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta http-equiv='cache-control' content='no-cache, no-store, must-revalidate'>
-<meta http-equiv='refresh' content='600'/>
-<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
-<title>DRYBOX</title>
-</head>
-<body>
+<!DOCTYPE html><html lang='pt-br'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta http-equiv='cache-control' content='no-cache, no-store, must-revalidate'><meta http-equiv='refresh' content='600'/><script src='https://cdn.jsdelivr.net/npm/chart.js'></script><style>.button-link{display:inline-block;padding:6px 12px;margin-bottom:0;font-size:14px;font-weight:400;line-height:1.42857143;text-align:center;white-space:nowrap;vertical-align:middle;cursor:pointer;text-decoration:none}</style><title>DRYBOX</title></head><body>
+)"""";
+
+const char html_root[] = R""""(
+<div style="border:1px solid black;width:98vw;height:50vh;"><canvas id="c" style="width:100%;height:100%;"></canvas></div>
 )"""";
 
 const char html_js[] = R""""(
-var canvas = document.getElementById('c');
-var ctx = canvas.getContext('2d');
-var myChart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: l,
-    datasets: [{
-      label: 'Temperature',
-      data: t,
-      borderColor: 'rgb(255, 0, 0)',
-      backgroundColor: 'rgb(255, 0, 0, 0.1)',
-      tension: 0.1,
-    }, {
-      label: 'Humidity',
-      data: h,
-      borderColor: 'rgb(0, 0, 255)',
-      backgroundColor: 'rgb(0, 0, 255, 0.1)',
-      tension: 0.1,
-    }]
-  },
-});
-</script>
-<div style="border: 1px solid black">
-<canvas id="c" width="718" height="239" style="display: block; box-sizing: border-box; height: 239px; width: 718px;"></canvas>
-</div>
+var c=document.getElementById('c'),a=c.getContext('2d');new Chart(a,{type:'line',data:{labels:l,datasets:[{label:'Temperature',data:t,borderColor:'rgb(255,0,0)',backgroundColor:'rgb(255,0,0,.1)',tension:.1},{label:'Humidity',data:h,borderColor:'rgb(0,0,255)',backgroundColor:'rgb(0,0,255,.1)',tension:.1}]},options:{maintainAspectRatio:!1,scales:{y:{ticks:{display:!1}},x:{ticks:{display:!0}}}}});</script>
 )"""";
 
 const char html_footer[] = R""""(
-</body>
-</html>)"""";
-
-const char html_buttons[] = R""""(
-<form action='/' method='POST'><input type='submit' value='MAIN'></form>
-<form action='/info' method='POST'><input type='submit' value='INFO'></form>
-<form action='/files' method='POST'><input type='submit' value='FILES'></form>
-<form action='/config' method='POST'><input type='submit' value='CONFIG'></form>
-<form action='/reboot' method='POST'><input type='submit' value='REBOOT'></form>
-<form action='/reset' method='POST'><input type='submit' value='RESET'></form>)"""";
+</body></html>
+)"""";
 
 const char html_commands[] = R""""(
-<form action='/command?status' method='POST'><input type='submit' value='STATUS'></form>
-<form action='/command?fan_off' method='POST'><input type='submit' value='FAN OFF'></form>
-<form action='/command?fan_on' method='POST'><input type='submit' value='FAN ON'></form>
-<form action='/command?heater_off' method='POST'><input type='submit' value='HEATER OFF'></form>
-<form action='/command?heater_on' method='POST'><input type='submit' value='HEATER ON'></form>
+<div style="border:1px solid black;padding:10px;text-align:center"><a href="/command?status" class="button-link"><button>STATUS</button></a><a href="/command?fan_off" class="button-link"><button>FAN OFF</button></a><a href="/command?fan_on" class="button-link"><button>FAN ON</button></a><a href="/command?heater_off" class="button-link"><button>HEATER OFF</button></a><a href="/command?heater_on" class="button-link"><button>HEATER ON</button></a></div>
+)"""";
+
+const char html_buttons[] = R""""(
+<div style="border:1px solid black;padding:10px;text-align:center"><a href="/" class="button-link"><button>MAIN</button></a><a href="/info" class="button-link"><button>INFO</button></a><a href="/files" class="button-link"><button>FILES</button></a><a href="/config" class="button-link"><button>CONFIG</button></a><a href="/reboot" class="button-link"><button>REBOOT</button></a><a href="/reset" class="button-link"><button>RESET</button></a></div>
 )"""";

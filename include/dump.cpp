@@ -1,7 +1,5 @@
 #include "main.h"
 
-extern struct config_data config;
-
 const char ESP_INFO[] PROGMEM =
     "ESP8266\n"
     "ESP.getFreeHeap(): %d\n"

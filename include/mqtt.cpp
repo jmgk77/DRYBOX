@@ -10,8 +10,6 @@ bool mqtt_announce = false;
 String mqtt_topic_ip;
 String mqtt_topic_buttons;
 
-extern struct config_data config;
-
 void __callback(const char* payload) {
   // ***
 }

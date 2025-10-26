@@ -25,7 +25,7 @@ void heater_off() {
 bool get_heater() { return heater_status; }
 
 void fan_on() {
-  digitalWrite(FAN_PIN, HIGH);
+  digitalWrite(FAN_PIN, LOW);
   fan_status = true;
 #ifdef DEBUG
   Serial.println("! Fan ON");
@@ -33,7 +33,7 @@ void fan_on() {
 };
 
 void fan_off() {
-  digitalWrite(FAN_PIN, LOW);
+  digitalWrite(FAN_PIN, HIGH);
   fan_status = false;
 #ifdef DEBUG
   Serial.println("! Fan OFF");

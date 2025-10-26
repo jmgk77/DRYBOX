@@ -5,8 +5,8 @@
 Adafruit_BME280 bme;
 Ticker get_th;
 
-volatile float temperature;
-volatile float humidity;
+float temperature;
+float humidity;
 
 void __get_th_callback() {
   temperature = bme.readTemperature();
@@ -20,13 +20,13 @@ void __get_th_callback() {
 void init_bme280() {
   if (!bme.begin(0x76)) {
 #ifdef DEBUG
-    Serial.println("* BME280 OK\n");
+    Serial.println("* BME280 NOK\n");
 #endif
     while (1) {
     };
   } else {
 #ifdef DEBUG
-    Serial.println("* BME280 NOK");
+    Serial.println("* BME280 OK");
 #endif
   }
 

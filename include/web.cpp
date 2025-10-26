@@ -5,53 +5,59 @@ AsyncWebServer server(80);
 AsyncWiFiManager wm(&server, &dns);
 ESPAsyncHTTPUpdateServer updateServer;
 
-extern struct config_data config;
-extern char boot_time[32];
-extern bool oled_update_pending;
-
 String __add_buttons() { return String(html_buttons); }
 
-String __get_status() {
+void __handle_root(AsyncWebServerRequest* request) {
+  AsyncResponseStream* response = request->beginResponseStream("text/html");
+
+  response->print(html_header);
+  response->print(html_root);
+  response->print(html_commands);
+  response->print(html_buttons);
+
+  String t = "const t = [";
+  String h = "const h = [";
+  String l = "const l = [";
+
+  //*** read file
+
+  // last sensor reads
+  if (th_index > 0) {
+    for (unsigned int i = 0; i < th_index; i++) {
+      t += th_info[i].temperature;
+      h += th_info[i].humidity;
+      l += i;
+      if (i < th_index - 1) {
+        t += ",";
+        h += ",";
+        l += ",";
+      }
+    }
+  }
+  t += "];";
+  h += "];";
+  l += "];";
+
+  response->print("<script>");
+  response->print(t);
+  response->print(h);
+  response->print(l);
+  response->print(html_js);
+
+  response->print(html_footer);
+
+  // send root page
+  request->send(response);
+}
+
+void __handle_info(AsyncWebServerRequest* request) {
   String s = "<div>";
   s += "HEATER:" + String(get_heater() ? "ON" : "OFF") + "<br>";
   s += "FAN:" + String(get_fan() ? "ON" : "OFF") + "<br>";
   s += "TEMPERATURE:" + String(get_temperature()) + "<br>";
   s += "HUMIDITY:" + String(get_humidity()) + "<br>";
   s += "<br></div>";
-  return s;
-}
 
-void __handle_root(AsyncWebServerRequest* request) {
-  String s;
-
-  s = +"<script>const t = [";
-  // for (int i = 0; i < count; i++) {
-  //   snprintf_P(buf, sizeof(buf), "%.01f,", th_info[start + i].temperature);
-  //   server.sendContent(buf);
-  // }
-  s += "];\nconst h = [";
-  // for (int i = 0; i < count; i++) {
-  //   snprintf_P(buf, sizeof(buf), "%.01f,", th_info[start + i].humidity);
-  //   server.sendContent(buf);
-  // }
-
-  s += "];";
-
-  s += String(html_js);
-
-  //***
-  s += String(html_commands);
-
-  // buttons
-  s += __add_buttons();
-  // send root page
-  request->send(200, "text/html", html_header + s + html_footer);
-}
-
-void __handle_info(AsyncWebServerRequest* request) {
-  String s;
-
-  s += __get_status();
   //
   s += "IP: <i>" + WiFi.localIP().toString() + "</i><br>\n";
   s += "Data de ínicio: <i>" + String(boot_time) + "</i><br>\n";

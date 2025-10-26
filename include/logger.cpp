@@ -24,10 +24,11 @@ void __dump_csv() {
       f.printf("%.01f, %.01f\n", th_info[i].temperature, th_info[i].humidity);
     }
     f.close();
-  }
+  } else {
 #ifdef DEBUG
-  Serial.println("* LOGGER ERROR");
+    Serial.println("* LOGGER ERROR (" + String(th_log_name) + ")");
 #endif
+  }
   th_index = 0;
 }
 
@@ -36,10 +37,12 @@ void init_logger() {
   time_t t = time(NULL);
   localtime_r(&t, &now);
 
-  LittleFS.format();
+  // LittleFS.format();
+
+  // create csv name
+  strftime(th_log_name, sizeof(th_log_name), "/%Y%m%d_%H%M.csv", &now);
 
   // create csv file
-  strftime(th_log_name, sizeof(th_log_name), "/%Y%m%d_%H%M.csv", &now);
   File f = LittleFS.open(th_log_name, "w");
   if (f) {
     f.printf("Temperatura, Umidade\n");
