@@ -5,7 +5,7 @@
 PicoMQTT::Client* mqtt_client;
 
 Ticker mqtt;
-bool mqtt_announce = false;
+volatile bool mqtt_announce = false;
 
 String mqtt_topic_ip;
 String mqtt_topic_buttons;

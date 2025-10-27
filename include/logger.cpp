@@ -10,7 +10,7 @@ struct TH_INFO {
 };
 
 TH_INFO th_info[MAX_TH_INFO];
-unsigned int th_index = 0;
+volatile unsigned int th_index = 0;
 char th_log_name[64];
 
 Ticker th;

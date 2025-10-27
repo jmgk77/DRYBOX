@@ -33,6 +33,8 @@ void setup() {
   oled_clear();
 
   init_logger();
+
+  init_dry();
 }
 
 void loop() {
@@ -41,4 +43,6 @@ void loop() {
   handle_mqtt();
 
   handle_oled();
+
+  handle_dry();
 }

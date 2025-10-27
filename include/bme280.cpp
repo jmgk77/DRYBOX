@@ -5,8 +5,8 @@
 Adafruit_BME280 bme;
 Ticker get_th;
 
-float temperature;
-float humidity;
+volatile float temperature;
+volatile float humidity;
 
 void __get_th_callback() {
   temperature = bme.readTemperature();

@@ -25,6 +25,7 @@ void __handle_root(AsyncWebServerRequest* request) {
   response->print(html_commands);
   response->print(html_buttons);
 
+  // generate js t
   response->print("<script>const t=[");
 
   // Read historical data from the binary log file
@@ -53,14 +54,18 @@ void __handle_root(AsyncWebServerRequest* request) {
       first = false;
     }
   }
+
+  // generate js h
   response->print("];const h=[");
 
-  // Reset first flag for humidity
+  // Read historical data from the binary log file
+  f = LittleFS.open(th_log_name, "r");
   first = true;
   // We need to re-read the data for humidity. This is not ideal but avoids
   // storing all data in memory. A better long-term solution might be to
   // restructure the data or the page logic.
-  if (f && f.seek(-sizeof(TH_INFO) * 180, SeekEnd)) {
+  if (f) {
+    f.seek(-sizeof(TH_INFO) * 180, SeekEnd);
     TH_INFO history_buffer;
     while (f.read((uint8_t*)&history_buffer, sizeof(TH_INFO)) ==
            sizeof(TH_INFO)) {
@@ -88,31 +93,31 @@ void __handle_root(AsyncWebServerRequest* request) {
 }
 
 void __handle_info(AsyncWebServerRequest* request) {
-  String s = "<div>";
-  s += "HEATER:" + String(get_heater() ? "ON" : "OFF") + "<br>";
-  s += "FAN:" + String(get_fan() ? "ON" : "OFF") + "<br>";
-  s += "TEMPERATURE:" + String(get_temperature()) + "<br>";
-  s += "HUMIDITY:" + String(get_humidity()) + "<br>";
-  s += "<br></div>";
+  AsyncResponseStream* response = request->beginResponseStream("text/html");
+  response->print(html_header);
 
-  //
-  s += "IP: <i>" + WiFi.localIP().toString() + "</i><br>\n";
-  s += "Data de ínicio: <i>" + String(boot_time) + "</i><br>\n";
-  // version
-  s += "Versão: " + String(VERSION) +
+  response->print("<div>");
+  response->printf("HEATER: %s<br>", get_heater() ? "ON" : "OFF");
+  response->printf("FAN: %s<br>", get_fan() ? "ON" : "OFF");
+  response->printf("TEMPERATURE: %f<br>", get_temperature());
+  response->printf("HUMIDITY: %f<br>", get_humidity());
+  response->print("<br></div>");
+
+  response->printf("IP: <i>%s</i><br>\n", WiFi.localIP().toString().c_str());
+  response->printf("Data de ínicio: <i>%s</i><br>\n", boot_time);
+  response->printf("Versão: %s", VERSION);
 #ifdef DEBUG
-       "<FONT color=red><b> DEBUG</b></FONT>" +
+  response->print("<FONT color=red><b> DEBUG</b></FONT>");
 #endif
-       "<br><br>\n";
+  response->print("<br><br>\n");
 
-  s += html_dump_esp8266();
-  s += html_dump_config();
-  s += html_dump_fs();
+  response->print(html_dump_esp8266());
+  response->print(html_dump_config());
+  response->print(html_dump_fs());
 
-  // buttons
-  s += __add_buttons();
-  // send root page
-  request->send(200, "text/html", html_header + s + html_footer);
+  response->print(__add_buttons());
+  response->print(html_footer);
+  request->send(response);
 }
 
 void __handle_config(AsyncWebServerRequest* request) {
