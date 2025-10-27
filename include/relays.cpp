@@ -10,7 +10,7 @@ void heater_on() {
   digitalWrite(HEATER_PIN, LOW);
   heater_status = true;
 #ifdef DEBUG
-  Serial.println("! Heater ON");
+  // Serial.println("! Heater ON");
 #endif
 }
 
@@ -18,7 +18,7 @@ void heater_off() {
   digitalWrite(HEATER_PIN, HIGH);
   heater_status = false;
 #ifdef DEBUG
-  Serial.println("! Heater OFF");
+  // Serial.println("! Heater OFF");
 #endif
 }
 
@@ -28,7 +28,7 @@ void fan_on() {
   digitalWrite(FAN_PIN, LOW);
   fan_status = true;
 #ifdef DEBUG
-  Serial.println("! Fan ON");
+  // Serial.println("! Fan ON");
 #endif
 };
 
@@ -36,7 +36,7 @@ void fan_off() {
   digitalWrite(FAN_PIN, HIGH);
   fan_status = false;
 #ifdef DEBUG
-  Serial.println("! Fan OFF");
+  // Serial.println("! Fan OFF");
 #endif
 };
 
