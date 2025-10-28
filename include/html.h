@@ -49,7 +49,7 @@ const char html_root[] = R""""(
 )"""";
 
 const char html_js[] = R""""(
-const l=new Array(t.length).fill(""),canvas=document.getElementById("c"),ctx=canvas.getContext("2d");new Chart(ctx,{type:"line",data:{labels:l,datasets:[{label:"Temperatura",data:t,borderColor:"rgb(255, 0, 0)",backgroundColor:"rgba(255, 0, 0, 0.1)",tension:.1},{label:"Umidade",data:h,borderColor:"rgb(0, 0, 255)",backgroundColor:"rgba(0, 0, 255, 0.1)",tension:.1}]}});</script>
+const l=new Array(t.length).fill("");t.length>10&&(l[t.length-10]="10 min ago"),t.length>30&&(l[t.length-30]="30 min ago"),t.length>60&&(l[t.length-60]="1 hour ago"),t.length>120&&(l[t.length-120]="2 hours ago");const canvas=document.getElementById("c"),ctx=canvas.getContext("2d");new Chart(ctx,{type:"line",data:{labels:l,datasets:[{label:"Temperatura",data:t,borderColor:"rgb(255, 0, 0)",backgroundColor:"rgba(255, 0, 0, 0.1)",tension:.1},{label:"Umidade",data:h,borderColor:"rgb(0, 0, 255)",backgroundColor:"rgba(0, 0, 255, 0.1)",tension:.1}]}});</script>
 )"""";
 
 const char html_footer[] = R""""(
