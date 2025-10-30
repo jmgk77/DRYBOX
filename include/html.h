@@ -46,10 +46,11 @@ const char html_root[] = R""""(
   <span>Estado do Ciclo: <b>%STATE%</b></span> | <span>Tempo Restante: <b>%TIME%</b></span>
 </div>
 <div style="border:1px solid black;width:98vw;height:50vh;"><canvas id="c" style="width:100%;height:100%;"></canvas></div>
+<div style="text-align:center;margin-top:1em;"><button onclick="downloadCSV()">DOWNLOAD CSV</button></div>
 )"""";
 
 const char html_js[] = R""""(
-const l=new Array(t.length).fill("");t.length>10&&(l[t.length-10]="10 min ago"),t.length>30&&(l[t.length-30]="30 min ago"),t.length>60&&(l[t.length-60]="1 hour ago"),t.length>120&&(l[t.length-120]="2 hours ago");const canvas=document.getElementById("c"),ctx=canvas.getContext("2d");new Chart(ctx,{type:"line",data:{labels:l,datasets:[{label:"Temperatura",data:t,borderColor:"rgb(255, 0, 0)",backgroundColor:"rgba(255, 0, 0, 0.1)",tension:.1},{label:"Umidade",data:h,borderColor:"rgb(0, 0, 255)",backgroundColor:"rgba(0, 0, 255, 0.1)",tension:.1}]}});</script>
+function downloadCSV(){if("undefined"==typeof t||"undefined"==typeof h||t.length!==h.length)return void console.error("Data arrays are not defined or have different lengths.");let e="Temperature,Humidity\n";for(let n=0;n<t.length;n++)e+=`${t[n]},${h[n]}\n`;const o=new Blob([e],{type:"text/csv;charset=utf-8;"}),a=document.createElement("a"),l=URL.createObjectURL(o);a.href=l,a.setAttribute("download","drybox_data.csv"),document.body.appendChild(a),a.click(),document.body.removeChild(a),URL.revokeObjectURL(l)}const l=new Array(t.length).fill("");t.length>10&&(l[t.length-10]="10 min ago"),t.length>30&&(l[t.length-30]="30 min ago"),t.length>60&&(l[t.length-60]="1 hour ago"),t.length>120&&(l[t.length-120]="2 hours ago");const c=document.getElementById("c"),d=c.getContext("2d");new Chart(d,{type:"line",data:{labels:l,datasets:[{label:"Temperatura",data:t,borderColor:"rgb(255, 0, 0)",backgroundColor:"rgba(255, 0, 0, 0.1)",tension:.1},{label:"Umidade",data:h,borderColor:"rgb(0, 0, 255)",backgroundColor:"rgba(0, 0, 255, 0.1)",tension:.1}]}});</script>
 )"""";
 
 const char html_footer[] = R""""(
