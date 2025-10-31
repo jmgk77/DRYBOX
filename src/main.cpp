@@ -28,6 +28,10 @@ void setup() {
 
   init_relays();
 
+#ifdef ENABLE_SERVO
+  init_servo();
+#endif
+
   init_bme280();
 
   oled_clear();

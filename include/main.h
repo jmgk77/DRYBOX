@@ -25,10 +25,15 @@
 #define DEFAULT_DEVICE_NAME "DRYBOX"
 
 #define DEBUG
+// #define ENABLE_SERVO
 // #define DEBUG_SENSORS
 // #define DEBUG_HW
 // #define ENABLE_EXTRA_DISCOVERY
 #define WWW_FILESERVER
+
+#ifdef ENABLE_SERVO
+#include <Servo.h>
+#endif
 
 //
 #include "html.h"
@@ -45,4 +50,7 @@
 #include "mqtt.cpp"
 #include "oled.cpp"
 #include "relays.cpp"
+#ifdef ENABLE_SERVO
+#include "servo.cpp"
+#endif
 #include "web.cpp"

@@ -5,7 +5,14 @@ void heater_on();
 void heater_off();
 void fan_on();
 void fan_off();
-bool get_fan();  // Forward declaration for get_fan()
+bool get_fan();
+#ifdef ENABLE_SERVO
+void servo_on();
+void servo_off();
+#else
+void servo_on() {}
+void servo_off() {}
+#endif
 
 // --- Parâmetros do Ciclo de Secagem ---
 // No futuro, estes valores serão carregados de um arquivo de perfil.
@@ -103,7 +110,7 @@ void __reset_agitation_timer() {
 void stop_dry_cycle() {
   heater_off();
   fan_off();
-  // servo_off(); // To be implemented: close exhaust servo
+  servo_off();
   dry_timer.detach();  // Stop the timer
   current_dry_state = DryCycleState::IDLE;
 #ifdef DEBUG
@@ -209,7 +216,7 @@ void handle_dry() {
 #ifdef DEBUG
             Serial.println("! Iniciando ciclo de exaustão.");
 #endif
-            // servo_on(); // To be implemented: open exhaust servo
+            servo_on();
             fan_on();
             __start_exhaust_cycle();
 #ifdef DEBUG
@@ -242,7 +249,7 @@ void handle_dry() {
 #ifdef DEBUG
           Serial.println("! Fim de ciclo(s) de ventilação. Desligando FAN.");
 #endif
-          // servo_off(); // To be implemented: close exhaust servo
+          servo_off();
           fan_off();
         }
         break;

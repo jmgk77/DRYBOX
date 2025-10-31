@@ -10,6 +10,10 @@ void start_dry_cycle();
 void stop_dry_cycle();
 String get_dry_cycle_state_str();
 String get_remaining_time_str();
+#ifdef ENABLE_SERVO
+void servo_on();
+void servo_off();
+#endif
 
 String __add_buttons() { return String(html_buttons); }
 
@@ -174,6 +178,12 @@ void __handle_command(AsyncWebServerRequest* request) {
     heater_off();
   } else if (request->hasParam("heater_on")) {
     heater_on();
+#ifdef ENABLE_SERVO
+  } else if (request->hasParam("vent_open")) {
+    servo_on();
+  } else if (request->hasParam("vent_close")) {
+    servo_off();
+#endif
   } else {  // default
   }
 
