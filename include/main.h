@@ -19,13 +19,14 @@
 #include <ESPAsyncWebServer.h>
 #include <ESPAsyncWiFiManager.h>
 #include <LittleFS.h>
+#include <OneButton.h>
 #include <PicoMQTT.h>
 #include <Ticker.h>
 
 #define DEFAULT_DEVICE_NAME "DRYBOX"
 
 #define DEBUG
-// #define ENABLE_SERVO
+#define ENABLE_SERVO
 // #define DEBUG_SENSORS
 // #define DEBUG_HW
 // #define ENABLE_EXTRA_DISCOVERY
@@ -53,4 +54,5 @@
 #ifdef ENABLE_SERVO
 #include "servo.cpp"
 #endif
+#include "button.cpp"
 #include "web.cpp"

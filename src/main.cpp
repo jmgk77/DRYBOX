@@ -39,6 +39,8 @@ void setup() {
   init_logger();
 
   init_dry();
+
+  init_button();
 }
 
 void loop() {
@@ -49,4 +51,6 @@ void loop() {
   handle_oled();
 
   handle_dry();
+
+  handle_button();
 }
