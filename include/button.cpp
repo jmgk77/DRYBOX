@@ -4,10 +4,13 @@
 
 OneButton button;
 
+// Forward declarations
+void next_profile();
+
 void __single_click() { oled_status = true; }
 
 void __double_click() {
-  //***change current profile
+  next_profile();
   oled_status = true;
 }
 
@@ -18,6 +21,7 @@ void __long_press() {
   } else {
     stop_dry_cycle();
   }
+  oled_status = true;
 }
 
 void init_button() {

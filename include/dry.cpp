@@ -29,34 +29,69 @@ struct DryProfile {
   float umidade_exaustao;
 };
 
-// Perfil fixo para PLA (conforme discutido)
-// // Perfil fixo para PLA (referência)
-// DryProfile current_profile = {
-//     "PLA Padrão",  // nome
-//     50.0,          // temperatura_alvo
-//     2.0,           // histerese_temp
-//     240,           // tempo_total_min
-//     15,            // tempo_preaquecimento_min
-//     30,            // ciclo_agitacao_min
-//     60,            // duracao_agitacao_seg
-//     60,            // ciclo_exaustao_min
-//     120,           // duracao_exaustao_seg
-//     40.0           // umidade_exaustao
-// };
+// --- Perfis de Secagem ---
+const DryProfile dry_profiles[] = {
+    {"ABS Default",  // nome
+     80.0,           // temperatura_alvo
+     5.0,            // histerese_temp
+     360,            // tempo_total_min
+     30,             // tempo_preaquecimento_min
+     20,             // ciclo_agitacao_min
+     60,             // duracao_agitacao_seg
+     30,             // ciclo_exaustao_min
+     120,            // duracao_exaustao_seg
+     20.0},          // umidade_exaustao
 
-// Perfil fixo para ABS (para testes)
-DryProfile current_profile = {
-    "ABS Padrão",  // nome
-    80.0,          // temperatura_alvo
-    5.0,           // histerese_temp
-    360,           // tempo_total_min
-    30,            // tempo_preaquecimento_min
-    20,            // ciclo_agitacao_min
-    60,            // duracao_agitacao_seg
-    40,            // ciclo_exaustao_min
-    180,           // duracao_exaustao_seg
-    20.0           // umidade_exaustao
+    {"PLA Default",  // nome
+     50.0,           // temperatura_alvo
+     2.0,            // histerese_temp
+     240,            // tempo_total_min (4h)
+     15,             // tempo_preaquecimento_min
+     30,             // ciclo_agitacao_min
+     60,             // duracao_agitacao_seg
+     60,             // ciclo_exaustao_min
+     120,            // duracao_exaustao_seg
+     40.0},          // umidade_exaustao
+
+    {"PETG Default",  // nome
+     65.0,            // temperatura_alvo
+     3.0,             // histerese_temp
+     300,             // tempo_total_min (5h)
+     20,              // tempo_preaquecimento_min
+     30,              // ciclo_agitacao_min
+     60,              // duracao_agitacao_seg
+     45,              // ciclo_exaustao_min
+     120,             // duracao_exaustao_seg
+     30.0},           // umidade_exaustao
+
+    {"TPU Default",  // nome
+     55.0,           // temperatura_alvo
+     3.0,            // histerese_temp
+     480,            // tempo_total_min (8h)
+     20,             // tempo_preaquecimento_min
+     45,             // ciclo_agitacao_min
+     60,             // duracao_agitacao_seg
+     60,             // ciclo_exaustao_min
+     120,            // duracao_exaustao_seg
+     35.0},          // umidade_exaustao
+
+    {"Nylon (PA) Default",  // nome
+     75.0,                  // temperatura_alvo
+     5.0,                   // histerese_temp
+     720,                   // tempo_total_min (12h)
+     30,                    // tempo_preaquecimento_min
+     30,                    // ciclo_agitacao_min
+     60,                    // duracao_agitacao_seg
+     30,                    // ciclo_exaustao_min
+     180,                   // duracao_exaustao_seg
+     15.0}                  // umidade_exaustao
 };
+
+const int num_profiles = sizeof(dry_profiles) / sizeof(DryProfile);
+int current_profile_index = 0;  // Default to the first profile (ABS)
+
+// Perfil ativo atual
+DryProfile current_profile = dry_profiles[0];
 
 // --- Controle de Estado do Ciclo ---
 enum class DryCycleState { IDLE, PREHEATING, DRYING, DONE };
@@ -159,16 +194,30 @@ String get_remaining_time_str() {
 String get_dry_cycle_state_str() {
   switch (current_dry_state) {
     case DryCycleState::IDLE:
-      return "Ocioso";
+      return "Idle";
     case DryCycleState::PREHEATING:
-      return "Pré-aquecendo";
+      return "Heating";
     case DryCycleState::DRYING:
-      return "Secando";
+      return "Drying";
     case DryCycleState::DONE:
-      return "Concluído";
+      return "Done";
     default:
-      return "Desconhecido";
+      return "Unknown";
   }
+}
+
+const char* get_current_profile_name() { return current_profile.nome; }
+
+void next_profile() {
+  // Can't change profile while a cycle is running
+  if (current_dry_state != DryCycleState::IDLE) {
+    return;
+  }
+  current_profile_index = (current_profile_index + 1) % num_profiles;
+  current_profile = dry_profiles[current_profile_index];
+#ifdef DEBUG
+  Serial.println("! Profile changed to: " + String(get_current_profile_name()));
+#endif
 }
 
 void handle_dry() {

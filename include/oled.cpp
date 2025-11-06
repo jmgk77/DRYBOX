@@ -36,21 +36,51 @@ void oled_clear() {
   display.display();
 }
 
+// Forward declarations for functions used from other files
+const char* get_current_profile_name();
+String get_dry_cycle_state_str();
+String get_remaining_time_str();
+
 void oled_th_status() {
   display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
 
-  // Print Temperature
-  display.setCursor(0, 10);
-  display.print(get_temperature(), 1);  // Print float with 1 decimal place
-  display.print(" C");
+  // --- Profile Name (Top, centered) ---
+  const char* profile_name = get_current_profile_name();
+  int16_t x1, y1;
+  uint16_t w, h;
+  display.getTextBounds(profile_name, 0, 0, &x1, &y1, &w, &h);
+  display.setCursor((SCREEN_WIDTH - w) / 2, 0);
+  display.println(profile_name);
 
-  // Print Humidity
-  display.setCursor(0, 30);
-  display.print(get_humidity(), 1);  // Print float with 1 decimal place
-  display.print(" %");
+  // --- Cycle Status (Middle, large font, centered) ---
+  String status_str = get_dry_cycle_state_str();
+  display.setTextSize(2);
+  display.getTextBounds(status_str.c_str(), 0, 0, &x1, &y1, &w, &h);
+  display.setCursor((SCREEN_WIDTH - w) / 2, 16);
+  display.println(status_str);
+  display.setTextSize(1);
 
-  //***show cycle status
-  // show cycle profile
+  // --- Remaining Time (Below status, centered) ---
+  String time_str = get_remaining_time_str();
+  display.getTextBounds(time_str.c_str(), 0, 0, &x1, &y1, &w, &h);
+  display.setCursor((SCREEN_WIDTH - w) / 2, 35);
+  display.println(time_str);
+
+  // --- Temperature and Humidity (Bottom) ---
+  char th_buf[20];
+
+  // Temperature (Bottom-left)
+  snprintf(th_buf, sizeof(th_buf), "T: %.1f C", get_temperature());
+  display.setCursor(0, SCREEN_HEIGHT - 8);
+  display.print(th_buf);
+
+  // Humidity (Bottom-right)
+  snprintf(th_buf, sizeof(th_buf), "H: %.1f %%", get_humidity());
+  display.getTextBounds(th_buf, 0, 0, &x1, &y1, &w, &h);
+  display.setCursor(SCREEN_WIDTH - w, SCREEN_HEIGHT - 8);
+  display.print(th_buf);
 
   display.display();
 }

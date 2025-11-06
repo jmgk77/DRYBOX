@@ -3,7 +3,7 @@
 #define SERVO_PIN 14  // D5
 
 #define SERVO_ON_POS 0
-#define SERVO_OFF_POS 20
+#define SERVO_OFF_POS 45
 
 Servo vent;
 
@@ -32,4 +32,3 @@ void init_servo() {
   Serial.println("* SERVO OK");
 #endif
 }
-
