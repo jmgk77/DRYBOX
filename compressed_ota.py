@@ -23,4 +23,4 @@ def compressFirmware(source, target, env):
         (GZ_FIRMWARE_SIZE / ORG_FIRMWARE_SIZE) * 100, ORG_FIRMWARE_SIZE, GZ_FIRMWARE_SIZE))
 
 
-env.AddPostAction("buildprog", compressFirmware)
+env.AddPostAction("$BUILD_DIR/${PROGNAME}.bin", compressFirmware)
