@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 
 // Estrutura para Temperatura e Umidade
 typedef struct {
@@ -9,6 +10,8 @@ typedef struct {
 } TH_INFO;
 
 int main(int argc, char *argv[]) {
+    setlocale(LC_ALL, "");
+    
     // 1. Verifica o número de argumentos
     if (argc != 3) {
         // argc deve ser 3: [0] nome do programa, [1] arquivo binário, [2] arquivo CSV
@@ -46,7 +49,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Escreve o cabeçalho no arquivo CSV
-    fprintf(csv_file, "Temperature (C),Humidity (%%)\n");
+    fprintf(csv_file, "Temperature (C);Humidity (%%)\n");
 
     // 4. Lê o arquivo binário, estrutura por estrutura, e grava no CSV
     printf("Processing file: %s -> %s\n", binary_filename, csv_filename);
@@ -54,7 +57,7 @@ int main(int argc, char *argv[]) {
     // O loop continua enquanto fread retorna 1 (um registro lido com sucesso)
     while (fread(&current_data, sizeof(TH_INFO), 1, bin_file) == 1) {
         // Grava os dados. Usamos %.2f para garantir 2 casas decimais.
-        fprintf(csv_file, "%.2f,%.2f\n", 
+        fprintf(csv_file, "%.2f;%.2f\n", 
                 current_data.temperature, 
                 current_data.humidity);
         records_read++;
