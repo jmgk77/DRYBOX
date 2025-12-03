@@ -13,6 +13,7 @@ String get_remaining_time_str();
 void servo_on();
 void servo_off();
 bool get_servo_status();
+const char* get_current_profile_name();
 
 String __add_buttons() { return String(html_buttons); }
 
@@ -26,12 +27,16 @@ void __handle_root(AsyncWebServerRequest* request) {
   response->print(html_header);
 
   String root_page = html_root;
+  root_page.replace("%PROFILE_NAME%", get_current_profile_name());
   root_page.replace("%HEATER_STATE%", get_heater() ? "ON" : "OFF");
   root_page.replace("%FAN_STATE%", get_fan() ? "ON" : "OFF");
   root_page.replace("%STATE%", get_dry_cycle_state_str());
   root_page.replace("%TIME%", get_remaining_time_str());
   root_page.replace("%VENT_STATE%", get_vent_state_str());
   response->print(root_page);
+
+  bool is_running = (get_dry_cycle_state() != DryCycleState::IDLE &&
+                     get_dry_cycle_state() != DryCycleState::DONE);
 
   String profile_options;
   for (int i = 0; i < num_profiles; i++) {
@@ -40,6 +45,11 @@ void __handle_root(AsyncWebServerRequest* request) {
   }
   String commands_html = html_commands;
   commands_html.replace("%PROFILE_OPTIONS%", profile_options);
+
+  commands_html.replace("%DISABLED%", is_running ? "disabled" : "");
+  commands_html.replace("%START_DISABLED%", is_running ? "disabled" : "");
+  commands_html.replace("%STOP_DISABLED%", !is_running ? "disabled" : "");
+
   response->print(commands_html);
 
   response->print(html_buttons);

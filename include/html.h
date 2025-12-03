@@ -43,7 +43,7 @@ const char html_header[] = R""""(
 
 const char html_root[] = R""""(
 <div style="border:1px solid black;padding:10px;text-align:center;margin-bottom:1em;">
-  <span>Estado do Ciclo: <b>%STATE%</b></span> | <span>Tempo Restante: <b>%TIME%</b></span><br>
+  <span>Perfil: <b>%PROFILE_NAME%</b></span> | <span>Estado do Ciclo: <b>%STATE%</b></span> | <span>Tempo Restante: <b>%TIME%</b></span><br>
   <span>Aquecedor: <b>%HEATER_STATE%</b></span> | <span>Ventoinha: <b>%FAN_STATE%</b></span>
   | <span>Exaustor: <b>%VENT_STATE%</b></span>
 </div>
@@ -60,7 +60,7 @@ const char html_footer[] = R""""(
 )"""";
 
 const char html_commands[] = R""""(
-<div style="border:1px solid black;padding:10px;text-align:center"><form action="/command" method="GET" style="display:inline-block;"><select name="profile">%PROFILE_OPTIONS%</select><input type="hidden" name="start_cycle" value="1"><button type="submit">INICIAR CICLO</button></form><a href="/command?stop_cycle" class="button-link"><button>PARAR CICLO</button></a><a href="/command?fan_off" class="button-link"><button>FAN OFF</button></a><a href="/command?fan_on" class="button-link"><button>FAN ON</button></a><a href="/command?heater_off" class="button-link"><button>HEATER OFF</button></a><a href="/command?heater_on" class="button-link"><button>HEATER ON</button></a><a href="/command?vent_open" class="button-link"><button>VENT OPEN</button></a><a href="/command?vent_close" class="button-link"><button>VENT CLOSE</button></a></div>
+<div style="border:1px solid black;padding:10px;text-align:center"><form action="/command" method="GET" style="display:inline-block;"><select name="profile" %DISABLED%>%PROFILE_OPTIONS%</select><input type="hidden" name="start_cycle" value="1"><button type="submit" %START_DISABLED%>INICIAR CICLO</button></form><a href="/command?stop_cycle" class="button-link"><button %STOP_DISABLED%>PARAR CICLO</button></a><a href="/command?fan_off" class="button-link"><button>FAN OFF</button></a><a href="/command?fan_on" class="button-link"><button>FAN ON</button></a><a href="/command?heater_off" class="button-link"><button>HEATER OFF</button></a><a href="/command?heater_on" class="button-link"><button>HEATER ON</button></a><a href="/command?vent_open" class="button-link"><button>VENT OPEN</button></a><a href="/command?vent_close" class="button-link"><button>VENT CLOSE</button></a></div>
 )"""";
 
 const char html_buttons[] = R""""(
