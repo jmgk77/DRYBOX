@@ -3,11 +3,21 @@
 #define HEATER_PIN 16  // D0
 #define FAN_PIN 2      // D4
 
+#define LOW_TRIGGER
+
+#ifdef LOW_TRIGGER
+#define RELAY_ON LOW
+#define RELAY_OFF HIGH
+#else
+#define RELAY_ON HIGH
+#define RELAY_OFF LOW
+#endif
+
 bool heater_status;
 bool fan_status;
 
 void heater_on() {
-  digitalWrite(HEATER_PIN, LOW);
+  digitalWrite(HEATER_PIN, RELAY_ON);
   heater_status = true;
 #ifdef DEBUG
   // Serial.println("! Heater ON");
@@ -15,7 +25,7 @@ void heater_on() {
 }
 
 void heater_off() {
-  digitalWrite(HEATER_PIN, HIGH);
+  digitalWrite(HEATER_PIN, RELAY_OFF);
   heater_status = false;
 #ifdef DEBUG
   // Serial.println("! Heater OFF");
@@ -25,7 +35,7 @@ void heater_off() {
 bool get_heater() { return heater_status; }
 
 void fan_on() {
-  digitalWrite(FAN_PIN, LOW);
+  digitalWrite(FAN_PIN, RELAY_ON);
   fan_status = true;
 #ifdef DEBUG
   // Serial.println("! Fan ON");
@@ -33,7 +43,7 @@ void fan_on() {
 };
 
 void fan_off() {
-  digitalWrite(FAN_PIN, HIGH);
+  digitalWrite(FAN_PIN, RELAY_OFF);
   fan_status = false;
 #ifdef DEBUG
   // Serial.println("! Fan OFF");
