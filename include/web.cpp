@@ -10,12 +10,15 @@ void start_dry_cycle();
 void stop_dry_cycle();
 String get_dry_cycle_state_str();
 String get_remaining_time_str();
-#ifdef ENABLE_SERVO
 void servo_on();
 void servo_off();
-#endif
+bool get_servo_status();
 
 String __add_buttons() { return String(html_buttons); }
+
+String get_vent_state_str() {
+  return get_servo_status() ? "ABERTA" : "FECHADA";
+}
 
 void __handle_root(AsyncWebServerRequest* request) {
   AsyncResponseStream* response = request->beginResponseStream("text/html");
@@ -23,10 +26,22 @@ void __handle_root(AsyncWebServerRequest* request) {
   response->print(html_header);
 
   String root_page = html_root;
+  root_page.replace("%HEATER_STATE%", get_heater() ? "ON" : "OFF");
+  root_page.replace("%FAN_STATE%", get_fan() ? "ON" : "OFF");
   root_page.replace("%STATE%", get_dry_cycle_state_str());
   root_page.replace("%TIME%", get_remaining_time_str());
+  root_page.replace("%VENT_STATE%", get_vent_state_str());
   response->print(root_page);
-  response->print(html_commands);
+
+  String profile_options;
+  for (int i = 0; i < num_profiles; i++) {
+    profile_options += "<option value=\"" + String(i) + "\">" +
+                       String(dry_profiles[i].nome) + "</option>";
+  }
+  String commands_html = html_commands;
+  commands_html.replace("%PROFILE_OPTIONS%", profile_options);
+  response->print(commands_html);
+
   response->print(html_buttons);
 
   // generate js t
@@ -167,6 +182,10 @@ void __handle_config(AsyncWebServerRequest* request) {
 
 void __handle_command(AsyncWebServerRequest* request) {
   if (request->hasParam("start_cycle")) {
+    if (request->hasParam("profile")) {
+      int profile_index = request->getParam("profile")->value().toInt();
+      set_current_profile_by_index(profile_index);
+    }
     start_dry_cycle();
   } else if (request->hasParam("stop_cycle")) {
     stop_dry_cycle();
@@ -178,12 +197,10 @@ void __handle_command(AsyncWebServerRequest* request) {
     heater_off();
   } else if (request->hasParam("heater_on")) {
     heater_on();
-#ifdef ENABLE_SERVO
   } else if (request->hasParam("vent_open")) {
     servo_on();
   } else if (request->hasParam("vent_close")) {
     servo_off();
-#endif
   } else {  // default
   }
 

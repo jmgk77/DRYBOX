@@ -6,13 +6,8 @@ void heater_off();
 void fan_on();
 void fan_off();
 bool get_fan();
-#ifdef ENABLE_SERVO
 void servo_on();
 void servo_off();
-#else
-void servo_on() {}
-void servo_off() {}
-#endif
 
 // --- Parâmetros do Ciclo de Secagem ---
 // No futuro, estes valores serão carregados de um arquivo de perfil.
@@ -218,6 +213,13 @@ void next_profile() {
 #ifdef DEBUG
   Serial.println("! Profile changed to: " + String(get_current_profile_name()));
 #endif
+}
+
+void set_current_profile_by_index(int index) {
+  if (index >= 0 && index < num_profiles) {
+    current_profile_index = index;
+    current_profile = dry_profiles[current_profile_index];
+  }
 }
 
 void handle_dry() {

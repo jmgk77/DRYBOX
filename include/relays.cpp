@@ -32,7 +32,7 @@ void heater_off() {
 #endif
 }
 
-bool get_heater() { return heater_status; }
+bool get_heater() { return digitalRead(HEATER_PIN) == RELAY_ON; }
 
 void fan_on() {
   digitalWrite(FAN_PIN, RELAY_ON);
@@ -50,7 +50,7 @@ void fan_off() {
 #endif
 };
 
-bool get_fan() { return fan_status; }
+bool get_fan() { return digitalRead(FAN_PIN) == RELAY_ON; }
 
 void init_relays() {
   pinMode(HEATER_PIN, OUTPUT);

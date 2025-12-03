@@ -12,11 +12,9 @@ String mqtt_topic_buttons;
 
 // Forward declarations
 bool get_heater();
-#ifdef ENABLE_SERVO
 bool get_servo_status();
 void servo_on();
 void servo_off();
-#endif
 
 // Callback for incoming MQTT command messages.
 void __callback(const char* topic, const char* payload) {
@@ -36,12 +34,10 @@ void __callback(const char* topic, const char* payload) {
     heater_on();
   } else if (command == "HEATER_OFF") {
     heater_off();
-#ifdef ENABLE_SERVO
   } else if (command == "VENT_OPEN") {
     servo_on();
   } else if (command == "VENT_CLOSE") {
     servo_off();
-#endif
   }
 }
 
@@ -77,9 +73,7 @@ void handle_mqtt() {
     mqtt_client->publish(base_topic + "/HEATER", get_heater() ? "ON" : "OFF");
     mqtt_client->publish(base_topic + "/FAN", get_fan() ? "ON" : "OFF");
     mqtt_client->publish(base_topic + "/STATUS", get_dry_cycle_state_str());
-#ifdef ENABLE_SERVO
     mqtt_client->publish(base_topic + "/VENT",
                          get_servo_status() ? "OPEN" : "CLOSED");
-#endif
   }
 }
