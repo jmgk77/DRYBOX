@@ -34,8 +34,6 @@ void setup() {
 
   oled_clear();
 
-  init_logger();
-
   init_dry();
 
   init_button();

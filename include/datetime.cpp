@@ -3,6 +3,9 @@
 Ticker get_time;
 char boot_time[32];
 
+// Forward declaration
+void init_logger();
+
 void __get_time_callback() {
   // year is past 2021?
   if (time(nullptr) > 1609459200) {
@@ -13,10 +16,10 @@ void __get_time_callback() {
     Serial.print("* NTTP OK\n  Current date: ");
     Serial.print(boot_time);
 #endif
-
-  } else {
-    // reschedule
-    get_time.once_ms_scheduled(200, __get_time_callback);
+    // Time is synced, now we can initialize the logger with a correct
+    // timestamp.
+    init_logger();
+    get_time.detach();  // Stop polling
   }
 }
 
@@ -26,5 +29,5 @@ void init_time() {
 
   memset(boot_time, 0, sizeof(boot_time));
 
-  get_time.once_ms_scheduled(1000, __get_time_callback);
+  get_time.attach_ms(1000, __get_time_callback);
 }

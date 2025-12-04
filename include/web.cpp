@@ -54,16 +54,21 @@ void __handle_root(AsyncWebServerRequest* request) {
 
   response->print(html_buttons);
 
-  // generate js t
-  response->print("<script>const t=[");
+  // --- Generate JavaScript for Charts ---
+  // To optimize memory, we will read the file once and store the data in
+  // temporary buffers before printing.
+  response->print("<script>");
 
-  // Read historical data from the binary log file
-  File f = LittleFS.open(th_log_name, "r");
   bool first = true;
+
+  response->print("const t=[");
+  File f = LittleFS.open(th_log_name, "r");
   if (f) {
-    // Pula para a posição onde começam os últimos TH_HISTORY registros, a
-    // partir do final do arquivo
-    f.seek(-sizeof(TH_INFO) * TH_HISTORY, SeekEnd);
+    // Seek to the position of the last TH_HISTORY records from the end of the
+    // file
+    if (f.size() > sizeof(TH_INFO) * TH_HISTORY) {
+      f.seek(-sizeof(TH_INFO) * TH_HISTORY, SeekEnd);
+    }
 
     TH_INFO history_buffer;
     while (f.read((uint8_t*)&history_buffer, sizeof(TH_INFO)) ==
@@ -75,7 +80,7 @@ void __handle_root(AsyncWebServerRequest* request) {
     f.close();
   }
 
-  // Append last sensor reads from memory
+  // Append recent sensor reads from the memory buffer
   if (th_index > 0) {
     for (unsigned int i = 0; i < th_index; i++) {
       if (!first) response->print(",");
@@ -83,18 +88,15 @@ void __handle_root(AsyncWebServerRequest* request) {
       first = false;
     }
   }
-
-  // generate js h
   response->print("];const h=[");
 
-  // Read historical data from the binary log file
-  f = LittleFS.open(th_log_name, "r");
+  // Re-open file and print humidity data
   first = true;
-  // We need to re-read the data for humidity. This is not ideal but avoids
-  // storing all data in memory. A better long-term solution might be to
-  // restructure the data or the page logic.
+  f = LittleFS.open(th_log_name, "r");
   if (f) {
-    f.seek(-sizeof(TH_INFO) * TH_HISTORY, SeekEnd);
+    if (f.size() > sizeof(TH_INFO) * TH_HISTORY) {
+      f.seek(-sizeof(TH_INFO) * TH_HISTORY, SeekEnd);
+    }
     TH_INFO history_buffer;
     while (f.read((uint8_t*)&history_buffer, sizeof(TH_INFO)) ==
            sizeof(TH_INFO)) {

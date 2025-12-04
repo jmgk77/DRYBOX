@@ -1,7 +1,7 @@
 #include "main.h"
 
 #define MAX_TH_INFO 60
-#define TH_HISTORY 120
+#define TH_HISTORY 180
 #define TH_LOG_TIME 60
 
 struct TH_INFO {
@@ -40,16 +40,15 @@ void __th_callback() {
 }
 
 void init_logger() {
+  // This function now assumes time is already synchronized.
   struct tm now;
   time_t t = time(NULL);
   localtime_r(&t, &now);
 
-  // LittleFS.format();
-
   // create binary log name
   strftime(th_log_name, sizeof(th_log_name), "/%Y%m%d_%H%M.bin", &now);
 
-  // save
+  // Start the periodic logging
   __th_callback();
   th.attach_scheduled(TH_LOG_TIME, __th_callback);
 
