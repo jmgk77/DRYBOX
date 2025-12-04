@@ -37,10 +37,12 @@ void handle_memdebug() {
 
     File f = LittleFS.open(memdebug_log_name, "a");
     if (f) {
-      f.printf("[%d:%d:%d]\t[total: %u]\t[free: %u]\t[frag: %u%%]\t[max: %u]\n",
-               now.tm_hour, now.tm_min, now.tm_sec, md_initial_heap,
-               ESP.getFreeHeap(), ESP.getHeapFragmentation(),
-               ESP.getMaxFreeBlockSize());
+      f.printf(
+          "[%02d:%02d:%02d]\t[total: %u]\t[free: %u]\t[frag: %u%%]\t[max: "
+          "%u]\n",
+          now.tm_hour, now.tm_min, now.tm_sec, md_initial_heap,
+          ESP.getFreeHeap(), ESP.getHeapFragmentation(),
+          ESP.getMaxFreeBlockSize());
       f.close();
     }
   }
