@@ -26,6 +26,7 @@ void __handle_root(AsyncWebServerRequest* request) {
 
   response->print(html_header);
 
+  // send page
   String root_page = html_root;
   root_page.replace("%PROFILE_NAME%", get_current_profile_name());
   root_page.replace("%HEATER_STATE%", get_heater() ? "ON" : "OFF");
@@ -35,9 +36,7 @@ void __handle_root(AsyncWebServerRequest* request) {
   root_page.replace("%VENT_STATE%", get_vent_state_str());
   response->print(root_page);
 
-  bool is_running = (get_dry_cycle_state() != DryCycleState::IDLE &&
-                     get_dry_cycle_state() != DryCycleState::DONE);
-
+  // build profiles
   String profile_options;
   for (int i = 0; i < num_profiles; i++) {
     profile_options += "<option value=\"" + String(i) + "\">" +
@@ -46,21 +45,22 @@ void __handle_root(AsyncWebServerRequest* request) {
   String commands_html = html_commands;
   commands_html.replace("%PROFILE_OPTIONS%", profile_options);
 
+  // disable buttons
+  bool is_running = (get_dry_cycle_state() != DryCycleState::IDLE &&
+                     get_dry_cycle_state() != DryCycleState::DONE);
+
   commands_html.replace("%DISABLED%", is_running ? "disabled" : "");
   commands_html.replace("%START_DISABLED%", is_running ? "disabled" : "");
   commands_html.replace("%STOP_DISABLED%", !is_running ? "disabled" : "");
 
+  // send commands and buttons
   response->print(commands_html);
-
   response->print(html_buttons);
 
-  // --- Generate JavaScript for Charts ---
-  // To optimize memory, we will read the file once and store the data in
-  // temporary buffers before printing.
+  // gen js
   response->print("<script>");
 
   bool first = true;
-
   response->print("const t=[");
   File f = LittleFS.open(th_log_name, "r");
   if (f) {
@@ -88,15 +88,17 @@ void __handle_root(AsyncWebServerRequest* request) {
       first = false;
     }
   }
+
+  first = true;
   response->print("];const h=[");
 
   // Re-open file and print humidity data
-  first = true;
   f = LittleFS.open(th_log_name, "r");
   if (f) {
     if (f.size() > sizeof(TH_INFO) * TH_HISTORY) {
       f.seek(-sizeof(TH_INFO) * TH_HISTORY, SeekEnd);
     }
+
     TH_INFO history_buffer;
     while (f.read((uint8_t*)&history_buffer, sizeof(TH_INFO)) ==
            sizeof(TH_INFO)) {
@@ -178,11 +180,11 @@ void __handle_config(AsyncWebServerRequest* request) {
     FORM_END("SALVAR")
 
     // update
-    s +=
-        "<br>\n<form action='/update?name=firmware' "
-        "enctype=multipart/form-data "
-        "method=POST>Firmware:<br><input type=file accept=.bin,.bin.gz "
-        "name=firmware> <input type=submit value='Update Firmware'></form><br>";
+    s += "<br>\n<form action='/update?name=firmware' "
+         "enctype=multipart/form-data "
+         "method=POST>Firmware:<br><input type=file accept=.bin,.bin.gz "
+         "name=firmware> <input type=submit value='Update "
+         "Firmware'></form><br>";
 
     // buttons
     s += __add_buttons();
@@ -276,7 +278,8 @@ void __handle_files(AsyncWebServerRequest* request) {
     Serial.println("### Dir:\n");
 #endif
     String s;
-    s += "<div style='border: 1px solid black'>\n<div style='border: 1px solid "
+    s += "<div style='border: 1px solid black'>\n<div style='border: 1px "
+         "solid "
          "black'>\n";
     // scan files
     Dir dir = LittleFS.openDir("");
