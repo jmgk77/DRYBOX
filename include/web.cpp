@@ -61,9 +61,9 @@ void __handle_root(AsyncWebServerRequest* request) {
   File f = LittleFS.open(th_log_name, "r");
   bool first = true;
   if (f) {
-    // Pula para a posição onde começam os últimos 180 registros, a partir do
-    // final do arquivo
-    f.seek(-sizeof(TH_INFO) * 180, SeekEnd);
+    // Pula para a posição onde começam os últimos TH_HISTORY registros, a
+    // partir do final do arquivo
+    f.seek(-sizeof(TH_INFO) * TH_HISTORY, SeekEnd);
 
     TH_INFO history_buffer;
     while (f.read((uint8_t*)&history_buffer, sizeof(TH_INFO)) ==
@@ -94,7 +94,7 @@ void __handle_root(AsyncWebServerRequest* request) {
   // storing all data in memory. A better long-term solution might be to
   // restructure the data or the page logic.
   if (f) {
-    f.seek(-sizeof(TH_INFO) * 180, SeekEnd);
+    f.seek(-sizeof(TH_INFO) * TH_HISTORY, SeekEnd);
     TH_INFO history_buffer;
     while (f.read((uint8_t*)&history_buffer, sizeof(TH_INFO)) ==
            sizeof(TH_INFO)) {

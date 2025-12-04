@@ -1,7 +1,7 @@
 #include "main.h"
 
 #define MAX_TH_INFO 60
-
+#define TH_HISTORY 120
 #define TH_LOG_TIME 60
 
 struct TH_INFO {
