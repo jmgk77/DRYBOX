@@ -5,6 +5,7 @@ char boot_time[32];
 
 // Forward declaration
 void init_logger();
+void init_memdebug();
 
 void __get_time_callback() {
   // year is past 2021?
@@ -16,9 +17,13 @@ void __get_time_callback() {
     Serial.print("* NTTP OK\n  Current date: ");
     Serial.print(boot_time);
 #endif
-    // Time is synced, now we can initialize the logger with a correct
+    // Time is synced, now we can initialize the loggers with a correct
     // timestamp.
     init_logger();
+#ifdef DEBUG_MEM
+    init_memdebug();
+#endif
+    // Stop polling
     get_time.detach();  // Stop polling
   }
 }

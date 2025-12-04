@@ -27,6 +27,7 @@
 #define DEFAULT_DEVICE_NAME "DRYBOX"
 
 #define DEBUG
+#define DEBUG_MEM
 // #define DEBUG_SENSORS
 // #define DEBUG_HW
 // #define ENABLE_EXTRA_DISCOVERY
@@ -51,3 +52,4 @@
 #include "web.cpp"
 //
 #include "button.cpp"
+#include "mem_debug.cpp"

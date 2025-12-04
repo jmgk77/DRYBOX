@@ -1,6 +1,10 @@
 #include "main.h"
 
 void setup() {
+#ifdef DEBUG_MEM
+  md_initial_heap = ESP.getFreeHeap();
+#endif
+
 #ifdef DEBUG
   Serial.begin(115200, SERIAL_8N1, SERIAL_TX_ONLY, 1);
   delay(1000);
@@ -37,6 +41,9 @@ void setup() {
   init_dry();
 
   init_button();
+
+  // init_logger();
+  // init_memdebug();
 }
 
 void loop() {
@@ -49,4 +56,8 @@ void loop() {
   handle_dry();
 
   handle_button();
+
+#ifdef DEBUG_MEM
+  handle_memdebug();
+#endif
 }
