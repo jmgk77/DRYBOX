@@ -39,8 +39,11 @@ void __handle_root(AsyncWebServerRequest* request) {
   // build profiles
   String profile_options;
   for (int i = 0; i < num_profiles; i++) {
-    profile_options += "<option value=\"" + String(i) + "\">" +
-                       String(dry_profiles[i].nome) + "</option>";
+    profile_options += "<option value=\"" + String(i) + "\"";
+    if (i == current_profile_index) {
+      profile_options += " selected";
+    }
+    profile_options += ">" + String(dry_profiles[i].nome) + "</option>";
   }
   String commands_html = html_commands;
   commands_html.replace("%PROFILE_OPTIONS%", profile_options);
