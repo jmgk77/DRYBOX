@@ -15,7 +15,7 @@ void servo_off();
 bool get_servo_status();
 const char* get_current_profile_name();
 
-String __add_buttons() { return String(html_buttons); }
+String __add_buttons() { return FPSTR(html_buttons); }
 
 String get_vent_state_str() {
   return get_servo_status() ? "ABERTA" : "FECHADA";
@@ -23,11 +23,10 @@ String get_vent_state_str() {
 
 void __handle_root(AsyncWebServerRequest* request) {
   AsyncResponseStream* response = request->beginResponseStream("text/html");
-
-  response->print(html_header);
+  response->print(FPSTR(html_header));
 
   // send page
-  String root_page = html_root;
+  String root_page = FPSTR(html_root);
   root_page.replace("%PROFILE_NAME%", get_current_profile_name());
   root_page.replace("%HEATER_STATE%", get_heater() ? "ON" : "OFF");
   root_page.replace("%FAN_STATE%", get_fan() ? "ON" : "OFF");
@@ -45,7 +44,7 @@ void __handle_root(AsyncWebServerRequest* request) {
     }
     profile_options += ">" + String(dry_profiles[i].nome) + "</option>";
   }
-  String commands_html = html_commands;
+  String commands_html = FPSTR(html_commands);
   commands_html.replace("%PROFILE_OPTIONS%", profile_options);
 
   // disable buttons
@@ -58,7 +57,7 @@ void __handle_root(AsyncWebServerRequest* request) {
 
   // send commands and buttons
   response->print(commands_html);
-  response->print(html_buttons);
+  response->print(FPSTR(html_buttons));
 
   // gen js
   response->print("<script>");
@@ -120,9 +119,8 @@ void __handle_root(AsyncWebServerRequest* request) {
   }
   response->print("];");
 
-  response->print(html_js);
-
-  response->print(html_footer);
+  response->print(FPSTR(html_js));
+  response->print(FPSTR(html_footer));
 
   // send root page
   request->send(response);
@@ -130,7 +128,7 @@ void __handle_root(AsyncWebServerRequest* request) {
 
 void __handle_info(AsyncWebServerRequest* request) {
   AsyncResponseStream* response = request->beginResponseStream("text/html");
-  response->print(html_header);
+  response->print(FPSTR(html_header));
 
   response->print("<div>");
   response->printf("HEATER: %s<br>", get_heater() ? "ON" : "OFF");
@@ -152,7 +150,7 @@ void __handle_info(AsyncWebServerRequest* request) {
   response->print(html_dump_fs());
 
   response->print(__add_buttons());
-  response->print(html_footer);
+  response->print(FPSTR(html_footer));
   request->send(response);
 }
 
@@ -193,7 +191,8 @@ void __handle_config(AsyncWebServerRequest* request) {
     s += __add_buttons();
 
     // send config page
-    request->send(200, "text/html", html_header + s + html_footer);
+    request->send(200, "text/html",
+                  String(FPSTR(html_header)) + s + String(FPSTR(html_footer)));
   }
 }
 
@@ -307,7 +306,8 @@ void __handle_files(AsyncWebServerRequest* request) {
     // buttons
     s += __add_buttons();
     // send dir page
-    request->send(200, "text/html", html_header + s + html_footer);
+    request->send(200, "text/html",
+                  String(FPSTR(html_header)) + s + String(FPSTR(html_footer)));
   }
 }
 

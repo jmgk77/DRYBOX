@@ -12,6 +12,7 @@ struct TH_INFO {
 TH_INFO th_info[MAX_TH_INFO];
 volatile unsigned int th_index = 0;
 char th_log_name[64];
+bool __do_dump_log = false;
 
 Ticker th;
 
@@ -27,15 +28,17 @@ void __dump_log() {
     Serial.println("* LOGGER ERROR (" + String(th_log_name) + ")");
 #endif
   }
+  // memory log was dumped to disk, now can accept more entries
   th_index = 0;
 }
 
 void __th_callback() {
-  th_info[th_index].temperature = get_temperature();
-  th_info[th_index].humidity = get_humidity();
-  th_index++;
-  if (th_index >= MAX_TH_INFO) {
-    __dump_log();
+  if ((th_index < MAX_TH_INFO)) {
+    th_info[th_index].temperature = get_temperature();
+    th_info[th_index].humidity = get_humidity();
+    th_index++;
+  } else {
+    __do_dump_log = true;
   }
 }
 
@@ -55,4 +58,11 @@ void init_logger() {
 #ifdef DEBUG
   Serial.println("* LOGGER OK (" + String(th_log_name) + ")");
 #endif
+}
+
+void handle_logger() {
+  if (__do_dump_log) {
+    __do_dump_log = false;
+    __dump_log();
+  }
 }

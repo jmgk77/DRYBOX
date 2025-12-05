@@ -57,6 +57,8 @@ void loop() {
 
   handle_button();
 
+  handle_logger();
+
 #ifdef DEBUG_MEM
   handle_memdebug();
 #endif
