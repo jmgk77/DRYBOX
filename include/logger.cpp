@@ -24,12 +24,11 @@ void __dump_log() {
     f.write((uint8_t*)th_info, sizeof(th_info));
     f.close();
   } else {
-#ifdef DEBUG
-    Serial.println("* LOGGER ERROR (" + String(th_log_name) + ")");
-#endif
+    LOG_MSG("LOGGER ERROR (%s)", th_log_name);
   }
   // memory log was dumped to disk, now can accept more entries
   th_index = 0;
+  LOG_MSG("DUMPED LOG");
 }
 
 void __th_callback() {
@@ -55,9 +54,7 @@ void init_logger() {
   __th_callback();
   th.attach_scheduled(TH_LOG_TIME, __th_callback);
 
-#ifdef DEBUG
-  Serial.println("* LOGGER OK (" + String(th_log_name) + ")");
-#endif
+  LOG_MSG("LOGGER OK (%s)", th_log_name);
 }
 
 void handle_logger() {

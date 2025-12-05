@@ -11,23 +11,18 @@ volatile float humidity;
 void __get_th_callback() {
   temperature = bme.readTemperature();
   humidity = bme.readHumidity();
-#ifdef DEBUG_SENSORS
-  Serial.println("T:" + String(temperature));
-  Serial.println("H:" + String(humidity));
+#ifdef DEBUG_VERBOSE
+  LOG_MSG("T:%.2f H:%.2f", temperature, humidity);
 #endif
 }
 
 void init_bme280() {
   if (!bme.begin(0x76)) {
-#ifdef DEBUG
-    Serial.println("* BME280 NOK\n");
-#endif
+    LOG_MSG("BME280 NOK");
     while (1) {
     };
   } else {
-#ifdef DEBUG
-    Serial.println("* BME280 OK");
-#endif
+    LOG_MSG("BME280 OK");
   }
 
   __get_th_callback();

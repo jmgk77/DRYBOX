@@ -27,16 +27,21 @@
 #define DEFAULT_DEVICE_NAME "DRYBOX"
 
 #define DEBUG
-#define DEBUG_MEM
-// #define DEBUG_SENSORS
-// #define DEBUG_HW
-// #define ENABLE_EXTRA_DISCOVERY
+// #define DEBUG_VERBOSE
+#define ENABLE_EXTRA_DISCOVERY
 #define WWW_FILESERVER
 
 //
 #include "html.h"
+#include "log.cpp"
 #include "oled.h"
 #include "version.h"
+
+#ifdef DEBUG
+#define LOG_MSG(...) log_message(__FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
+#else
+#define LOG_MSG(...)
+#endif
 
 //
 #include "bme280.cpp"

@@ -1,26 +1,22 @@
 #include "main.h"
 
 void setup() {
-#ifdef DEBUG_MEM
   md_initial_heap = ESP.getFreeHeap();
-#endif
 
 #ifdef DEBUG
   Serial.begin(115200, SERIAL_8N1, SERIAL_TX_ONLY, 1);
   delay(1000);
-  Serial.println();
-  Serial.println(String(DEFAULT_DEVICE_NAME) + " " + VERSION);
+  LOG_MSG("__------------------------------------------------------------__");
+  LOG_MSG("%s %s", DEFAULT_DEVICE_NAME, VERSION);
 #endif
 
   LittleFS.begin();
 
   init_config();
 
-#ifdef DEBUG_HW
   dump_esp8266();
   dump_fs();
   dump_config();
-#endif
 
   init_oled();
 
@@ -59,7 +55,5 @@ void loop() {
 
   handle_logger();
 
-#ifdef DEBUG_MEM
   handle_memdebug();
-#endif
 }

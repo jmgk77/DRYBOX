@@ -7,11 +7,15 @@ OneButton button;
 // Forward declarations
 void next_profile();
 
-void __single_click() { oled_status = true; }
+void __single_click() {
+  oled_status = true;
+  LOG_MSG(".");
+}
 
 void __double_click() {
   next_profile();
   oled_status = true;
+  LOG_MSG(".");
 }
 
 void __long_press() {
@@ -22,6 +26,7 @@ void __long_press() {
     stop_dry_cycle();
   }
   oled_status = true;
+  LOG_MSG(".");
 }
 
 void init_button() {
@@ -30,6 +35,7 @@ void init_button() {
   button.attachClick(__single_click);
   button.attachDoubleClick(__double_click);
   button.attachLongPressStart(__long_press);
+  LOG_MSG("BUTTON OK");
 }
 
 void handle_button() { button.tick(); }

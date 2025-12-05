@@ -13,16 +13,15 @@ void __get_time_callback() {
     // get boot time
     time_t t = time(NULL);
     strncpy(boot_time, ctime(&t), sizeof(boot_time));
-#ifdef DEBUG
-    Serial.print("* NTTP OK\n  Current date: ");
-    Serial.print(boot_time);
-#endif
+    char* _pos = strchr(boot_time, '\n');
+    if (_pos != NULL) {
+      *_pos = '\0';
+    }
+    LOG_MSG("NTP OK. Current date: %s", boot_time);
     // Time is synced, now we can initialize the loggers with a correct
     // timestamp.
     init_logger();
-#ifdef DEBUG_MEM
     init_memdebug();
-#endif
     // Stop polling
     get_time.detach();  // Stop polling
   }

@@ -22,6 +22,8 @@ String get_vent_state_str() {
 }
 
 void __handle_root(AsyncWebServerRequest* request) {
+  LOG_MSG(".");
+
   AsyncResponseStream* response = request->beginResponseStream("text/html");
   response->print(FPSTR(html_header));
 
@@ -127,6 +129,8 @@ void __handle_root(AsyncWebServerRequest* request) {
 }
 
 void __handle_info(AsyncWebServerRequest* request) {
+  LOG_MSG(".");
+
   AsyncResponseStream* response = request->beginResponseStream("text/html");
   response->print(FPSTR(html_header));
 
@@ -146,8 +150,13 @@ void __handle_info(AsyncWebServerRequest* request) {
   response->print("<br><br>\n");
 
   response->print(html_dump_esp8266());
+  response->print("<br><br>\n");
+
   response->print(html_dump_config());
+  response->print("<br><br>\n");
+
   response->print(html_dump_fs());
+  response->print("<br><br>\n");
 
   response->print(__add_buttons());
   response->print(FPSTR(html_footer));
@@ -155,6 +164,8 @@ void __handle_info(AsyncWebServerRequest* request) {
 }
 
 void __handle_config(AsyncWebServerRequest* request) {
+  LOG_MSG(".");
+
   //
   if (request->hasParam("s", true)) {
     // read options
@@ -225,14 +236,18 @@ void __handle_command(AsyncWebServerRequest* request) {
 }
 
 void __handle_reboot(AsyncWebServerRequest* request) {
+  LOG_MSG(".");
+
   request->send(200, "text/html",
-                "<meta http-equiv='refresh' content='15; url=/' />");
+                "<meta http-equiv='refresh' content='5; url=/' />");
   delay(1 * 1000);
   ESP.restart();
   delay(2 * 1000);
 }
 
 void __handle_reset(AsyncWebServerRequest* request) {
+  LOG_MSG(".");
+
   // erase config
   default_config();
   save_config();
@@ -242,6 +257,8 @@ void __handle_reset(AsyncWebServerRequest* request) {
 }
 
 void __handle_404(AsyncWebServerRequest* request) {
+  LOG_MSG(".");
+
   request->send(404, "text/plain", "Not found");
 }
 
@@ -259,26 +276,22 @@ String __b_kb_mb_gb(const size_t bytes) {
 }
 
 void __handle_files(AsyncWebServerRequest* request) {
+  LOG_MSG(".");
+
   if (request->hasParam("n")) {
     // download
     String fileName = request->getParam("n")->value();
-#ifdef DEBUG
-    Serial.printf("### Download: %s\n", fileName.c_str());
-#endif
+    LOG_MSG("Download: %s", fileName.c_str());
     request->send(LittleFS, fileName, "application/octet-stream");
   } else if (request->hasParam("x")) {
     // delete
     String fileName = request->getParam("x")->value();
-#ifdef DEBUG
-    Serial.printf("### Delete: %s\n", fileName.c_str());
-#endif
+    LOG_MSG("Delete: %s", fileName.c_str());
     LittleFS.remove(fileName);
     request->redirect("/files");
   } else {
     // dir
-#ifdef DEBUG
-    Serial.println("### Dir:\n");
-#endif
+    LOG_MSG("Dir:");
     String s;
     s += "<div style='border: 1px solid black'>\n<div style='border: 1px "
          "solid "
@@ -287,9 +300,7 @@ void __handle_files(AsyncWebServerRequest* request) {
     Dir dir = LittleFS.openDir("");
     while (dir.next()) {
       if (dir.isFile()) {
-#ifdef DEBUG
-        Serial.printf("### \t%s\n", dir.fileName().c_str());
-#endif
+        LOG_MSG("\t%s", dir.fileName().c_str());
         s += "<a download='" + dir.fileName() +
              "' href='files?n=" + dir.fileName() + "'>" + dir.fileName() +
              "</a>";
@@ -314,20 +325,13 @@ void __handle_files(AsyncWebServerRequest* request) {
 void __handle_upload(AsyncWebServerRequest* request, String filename,
                      size_t index, uint8_t* data, size_t len, bool final) {
   if (!index) {
-#ifdef DEBUG
-    Serial.printf("### UploadStart: %s\n", filename.c_str());
-#endif
+    LOG_MSG("UploadStart: %s", filename.c_str());
     request->_tempFile = LittleFS.open("/" + filename, "w");
   }
-#ifdef DEBUG
-  Serial.printf("### UploadMiddle: %u bytes\n", len);
-#endif
+  LOG_MSG("UploadMiddle: %u bytes", len);
   request->_tempFile.write(data, len);
   if (final) {
-#ifdef DEBUG
-    Serial.printf("### UploadEnd: %s size: %u\n", filename.c_str(),
-                  index + len);
-#endif
+    LOG_MSG("UploadEnd: %s size: %u", filename.c_str(), index + len);
     request->_tempFile.close();
     request->redirect("/files");
   }
@@ -350,9 +354,7 @@ void init_web() {
     ESP.restart();
     delay(1 * 1000);
   }
-#ifdef DEBUG
-  Serial.println("* WIFI OK\n  Got IP: " + WiFi.localIP().toString());
-#endif
+  LOG_MSG("WIFI OK. Got IP: %s", WiFi.localIP().toString().c_str());
 
   // install www handlers
   server.onNotFound(__handle_404);

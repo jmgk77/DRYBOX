@@ -10,14 +10,10 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 void init_oled() {
   // init screen
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-#ifdef DEBUG
-    Serial.println("* OLED NOK");
-#endif
+    LOG_MSG("OLED NOK");
+  } else {
+    LOG_MSG("OLED OK");
   }
-#ifdef DEBUG
-  Serial.println("* OLED OK");
-#endif
-
   // draw logo
   display.clearDisplay();
   display.drawXBitmap((display.width() - logo_width) / 2,

@@ -1,38 +1,38 @@
 #include "main.h"
 
 const char ESP_INFO[] PROGMEM =
-    "ESP8266\n"
-    "ESP.getFreeHeap(): %d\n"
-    "ESP.getChipId(): %08X\n"
-    "ESP.getSdkVersion(): %s\n"
-    "ESP.getBootVersion(): %d\n"
-    "ESP.getBootMode(): %d\n"
-    "ESP.getCpuFreqMHz(): %d\n"
-    "ESP.getFlashChipId(): %08X\n"
-    "ESP.getFlashChipRealSize(): %d\n"
-    "ESP.getFlashChipSize(): %d\n"
-    "ESP.getFlashChipSpeed(): %dMHz\n"
-    "ESP.getFlashChipSizeByChipId(): %d\n"
-    "ESP.getSketchSize(): %d\n"
-    "ESP.getFreeSketchSpace(): %d\n"
-    "ESP.getResetInfo(): %s\n\n";
+    "ESP8266 - "
+    "ESP.getFreeHeap(): %d, "
+    "ESP.getChipId(): %08X, "
+    "ESP.getSdkVersion(): %s, "
+    "ESP.getBootVersion(): %d, "
+    "ESP.getBootMode(): %d, "
+    "ESP.getCpuFreqMHz(): %d, "
+    "ESP.getFlashChipId(): %08X, "
+    "ESP.getFlashChipRealSize(): %d, "
+    "ESP.getFlashChipSize(): %d, "
+    "ESP.getFlashChipSpeed(): %dMHz, "
+    "ESP.getFlashChipSizeByChipId(): %d, "
+    "ESP.getSketchSize(): %d, "
+    "ESP.getFreeSketchSpace(): %d, "
+    "ESP.getResetInfo(): %s";
 
 const char FS_INFO[] PROGMEM =
-    "FS\n"
-    "FS.totalBytes(): %d\n"
-    "FS.usedBytes(): %d\n"
-    "FS.blockSize(): %d\n"
-    "FS.pageSize(): %d\n"
-    "FS.maxOpenFiles(): %d\n"
-    "FS.maxPathLength(): %d\n\n";
+    "FS - "
+    "FS.totalBytes(): %d, "
+    "FS.usedBytes(): %d, "
+    "FS.blockSize(): %d, "
+    "FS.pageSize(): %d, "
+    "FS.maxOpenFiles(): %d, "
+    "FS.maxPathLength(): %d";
 
 const char config_INFO[] PROGMEM =
-    "CONFIG\n"
-    "config.device_name: %s\n"
-    "config.mqtt_server_ip: %s\n"
-    "config.mqtt_server_port: %d\n"
-    "config.mqtt_server_username: %s\n"
-    "config.mqtt_server_password: %s\n\n";
+    "CONFIG - "
+    "config.device_name: %s, "
+    "config.mqtt_server_ip: %s, "
+    "config.mqtt_server_port: %d, "
+    "config.mqtt_server_username: %s, "
+    "config.mqtt_server_password: %s";
 
 String __dump_esp8266() {
   char buf[1024];
@@ -64,24 +64,27 @@ String __dump_config() {
   return String(buf);
 }
 
-void dump_esp8266() { Serial.print(__dump_esp8266()); }
-void dump_fs() { Serial.print(__dump_fs()); }
-void dump_config() { Serial.print(__dump_config()); }
+void dump_esp8266() { LOG_MSG("%s", __dump_esp8266().c_str()); }
+void dump_fs() { LOG_MSG("%s", __dump_fs().c_str()); }
+void dump_config() { LOG_MSG("%s", __dump_config().c_str()); }
 
 String html_dump_esp8266() {
   String s = __dump_esp8266();
-  s.replace("\n", "<br>");
+  s.replace(",", "<br>");
+  s.replace("-", "<br>");
   return s;
 }
 
 String html_dump_fs() {
   String s = __dump_fs();
-  s.replace("\n", "<br>");
+  s.replace(",", "<br>");
+  s.replace("-", "<br>");
   return s;
 }
 
 String html_dump_config() {
   String s = __dump_config();
-  s.replace("\n", "<br>");
+  s.replace(",", "<br>");
+  s.replace("-", "<br>");
   return s;
 }

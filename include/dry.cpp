@@ -143,16 +143,12 @@ void stop_dry_cycle() {
   servo_off();
   dry_timer.detach();  // Stop the timer
   current_dry_state = DryCycleState::IDLE;
-#ifdef DEBUG
-  Serial.println("! Ciclo de secagem interrompido.");
-#endif
+  LOG_MSG("Ciclo de secagem interrompido.");
 }
 
 void start_dry_cycle() {
   if (current_dry_state != DryCycleState::IDLE) {
-#ifdef DEBUG
-    Serial.println("! Um ciclo de secagem já está em andamento.");
-#endif
+    LOG_MSG("Um ciclo de secagem já está em andamento.");
     return;
   }
 
@@ -164,11 +160,8 @@ void start_dry_cycle() {
   current_dry_state = DryCycleState::PREHEATING;
   dry_timer.attach(1, __dry_timer_callback);  // Start the 1-second timer
 
-#ifdef DEBUG
-  Serial.println("! Iniciando ciclo de secagem para " +
-                 String(current_profile.nome));
-  Serial.println("! Fase: Pré-aquecimento");
-#endif
+  LOG_MSG("Iniciando ciclo de secagem para %s", current_profile.nome);
+  LOG_MSG("Fase: Pré-aquecimento");
 }
 
 DryCycleState get_dry_cycle_state() { return current_dry_state; }
@@ -210,9 +203,7 @@ void next_profile() {
   }
   current_profile_index = (current_profile_index + 1) % num_profiles;
   current_profile = dry_profiles[current_profile_index];
-#ifdef DEBUG
-  Serial.println("! Profile changed to: " + String(get_current_profile_name()));
-#endif
+  LOG_MSG("Profile changed to: %s", get_current_profile_name());
 }
 
 void set_current_profile_by_index(int index) {
@@ -240,9 +231,7 @@ void handle_dry() {
         // Check if preheating time is over
         if (preheat_time_sec <= 0) {
           current_dry_state = DryCycleState::DRYING;
-#ifdef DEBUG
-          Serial.println("! Fase: Secagem");
-#endif
+          LOG_MSG("Fase: Secagem");
         }
         break;
       }
@@ -251,9 +240,7 @@ void handle_dry() {
         // Check if the total drying time is over
         if (remaining_time_sec <= 0) {
           current_dry_state = DryCycleState::DONE;
-#ifdef DEBUG
-          Serial.println("! Ciclo de secagem concluído.");
-#endif
+          LOG_MSG("Ciclo de secagem concluído.");
           stop_dry_cycle();  // This will also turn off heater/fan and timer
           return;            // Finaliza a execução
         }
@@ -264,15 +251,10 @@ void handle_dry() {
         } else if (__is_time_for_exhaust()) {
           // Time to start a new exhaust cycle, if agitation is not running
           if (__is_agitation_finished()) {
-#ifdef DEBUG
-            Serial.println("! Iniciando ciclo de exaustão.");
-#endif
+            LOG_MSG("Iniciando ciclo de exaustão.");
             servo_on();
             fan_on();
             __start_exhaust_cycle();
-#ifdef DEBUG
-            Serial.println("  -> Resetando timer de exaustão.");
-#endif
             __reset_exhaust_timer();
           }
         }
@@ -283,23 +265,16 @@ void handle_dry() {
         } else if (__is_time_for_agitation()) {
           // Time to start a new agitation cycle, if exhaust is not running
           if (__is_exhaust_finished()) {
-#ifdef DEBUG
-            Serial.println("! Iniciando ciclo de agitação.");
-#endif
+            LOG_MSG("Iniciando ciclo de agitação.");
             fan_on();
             __start_agitation_cycle();
-#ifdef DEBUG
-            Serial.println("  -> Resetando timer de agitação.");
-#endif
             __reset_agitation_timer();
           }
         }
 
         // Turn fan off if both cycles just finished
         if (get_fan() && __is_agitation_finished() && __is_exhaust_finished()) {
-#ifdef DEBUG
-          Serial.println("! Fim de ciclo(s) de ventilação. Desligando FAN.");
-#endif
+          LOG_MSG("Fim de ciclo(s) de ventilação. Desligando FAN.");
           servo_off();
           fan_off();
         }
@@ -315,8 +290,4 @@ void handle_dry() {
   }
 }
 
-void init_dry() {
-#ifdef DEBUG
-  Serial.println("* DRYER OK");
-#endif
-}
+void init_dry() { LOG_MSG("DRYER OK"); }

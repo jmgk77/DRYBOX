@@ -19,9 +19,7 @@ void servo_off();
 // Callback for incoming MQTT command messages.
 void __callback(const char* topic, const char* payload) {
   String command = payload;
-#ifdef DEBUG
-  Serial.printf("MQTT Command Received: [%s] %s\n", topic, command.c_str());
-#endif
+  LOG_MSG("MQTT Command Received: [%s] %s", topic, command.c_str());
   if (command == "START_CYCLE") {
     start_dry_cycle();
   } else if (command == "STOP_CYCLE") {
@@ -52,9 +50,7 @@ void init_mqtt() {
   mqtt.attach_scheduled(MQTT_ANNOUNCE_TIMER, []() { mqtt_announce = true; });
 
   mqtt_client->subscribe(String(config.device_name) + "/COMMAND", __callback);
-#ifdef DEBUG
-  Serial.println("* MQTT OK");
-#endif
+  LOG_MSG("MQTT OK");
 }
 
 void handle_mqtt() {
@@ -75,5 +71,8 @@ void handle_mqtt() {
     mqtt_client->publish(base_topic + "/STATUS", get_dry_cycle_state_str());
     mqtt_client->publish(base_topic + "/VENT",
                          get_servo_status() ? "OPEN" : "CLOSED");
+#ifdef DEBUG_VERBOSE
+    LOG_MSG("MQTT PUBLISH");
+#endif
   }
 }

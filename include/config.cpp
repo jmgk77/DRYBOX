@@ -14,9 +14,7 @@ struct config_data config;
 void save_config() {
   File configFile = LittleFS.open(CONFIG_FILE, "w");
   if (!configFile) {
-#ifdef DEBUG
-    Serial.println("Failed to open config file for writing");
-#endif
+    LOG_MSG("Failed to open config file for writing");
     return;
   }
 
@@ -28,9 +26,7 @@ void save_config() {
   doc["mqtt_server_password"] = config.mqtt_server_password;
 
   if (serializeJson(doc, configFile) == 0) {
-#ifdef DEBUG
-    Serial.println("Failed to write to config file");
-#endif
+    LOG_MSG("Failed to write to config file");
   }
   configFile.close();
 }
@@ -49,10 +45,8 @@ void init_config() {
       JsonDocument doc;
       DeserializationError error = deserializeJson(doc, configFile);
       if (error) {
-#ifdef DEBUG
-        Serial.println(
-            "Failed to read config file, using default configuration");
-#endif
+        LOG_MSG("Failed to read config file (%s), using default configuration",
+                error.c_str());
         default_config();
       } else {
         strlcpy(config.device_name, doc["device_name"] | DEFAULT_DEVICE_NAME,
@@ -71,9 +65,8 @@ void init_config() {
     // File does not exist, create it with default values
     default_config();
     save_config();
+    LOG_MSG("using default configuration");
   }
 
-#ifdef DEBUG
-  Serial.println("* CONFIG OK");
-#endif
+  LOG_MSG("CONFIG OK");
 }

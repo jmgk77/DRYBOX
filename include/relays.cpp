@@ -15,32 +15,24 @@
 
 void heater_on() {
   digitalWrite(HEATER_PIN, RELAY_ON);
-#ifdef DEBUG
-  // Serial.println("! Heater ON");
-#endif
+  // LOG_MSG("HEATER ON");
 }
 
 void heater_off() {
   digitalWrite(HEATER_PIN, RELAY_OFF);
-#ifdef DEBUG
-  // Serial.println("! Heater OFF");
-#endif
+  // LOG_MSG("HEATER OFF");
 }
 
 bool get_heater() { return digitalRead(HEATER_PIN) == RELAY_ON; }
 
 void fan_on() {
   digitalWrite(FAN_PIN, RELAY_ON);
-#ifdef DEBUG
-  // Serial.println("! Fan ON");
-#endif
+  // LOG_MSG("FAN ON");
 };
 
 void fan_off() {
   digitalWrite(FAN_PIN, RELAY_OFF);
-#ifdef DEBUG
-  // Serial.println("! Fan OFF");
-#endif
+  // LOG_MSG("FAN OFF");
 };
 
 bool get_fan() { return digitalRead(FAN_PIN) == RELAY_ON; }
@@ -51,7 +43,5 @@ void init_relays() {
 
   heater_off();
   fan_off();
-#ifdef DEBUG
-  Serial.println("* RELAYS OK");
-#endif
+  LOG_MSG("RELAYS OK");
 }
