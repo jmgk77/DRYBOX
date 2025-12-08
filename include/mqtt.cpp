@@ -7,9 +7,6 @@ PicoMQTT::Client* mqtt_client;
 Ticker mqtt;
 volatile bool mqtt_announce = false;
 
-String mqtt_topic_ip;
-String mqtt_topic_buttons;
-
 // Forward declarations
 bool get_heater();
 bool get_servo_status();

@@ -21,66 +21,64 @@ struct DryProfile {
   unsigned long duracao_agitacao_seg;
   unsigned long ciclo_exaustao_min;
   unsigned long duracao_exaustao_seg;
-  float umidade_exaustao;
 };
 
 // --- Perfis de Secagem ---
-const DryProfile dry_profiles[] = {
-    {"ABS Default",  // nome
-     80.0,           // temperatura_alvo
-     5.0,            // histerese_temp
-     360,            // tempo_total_min
-     30,             // tempo_preaquecimento_min
-     20,             // ciclo_agitacao_min
-     60,             // duracao_agitacao_seg
-     30,             // ciclo_exaustao_min
-     120,            // duracao_exaustao_seg
-     20.0},          // umidade_exaustao
-
-    {"PLA Default",  // nome
-     50.0,           // temperatura_alvo
-     2.0,            // histerese_temp
-     240,            // tempo_total_min (4h)
-     15,             // tempo_preaquecimento_min
-     30,             // ciclo_agitacao_min
-     60,             // duracao_agitacao_seg
-     60,             // ciclo_exaustao_min
-     120,            // duracao_exaustao_seg
-     40.0},          // umidade_exaustao
-
-    {"PETG Default",  // nome
-     65.0,            // temperatura_alvo
-     3.0,             // histerese_temp
-     300,             // tempo_total_min (5h)
-     20,              // tempo_preaquecimento_min
-     30,              // ciclo_agitacao_min
-     60,              // duracao_agitacao_seg
-     45,              // ciclo_exaustao_min
-     120,             // duracao_exaustao_seg
-     30.0},           // umidade_exaustao
-
-    {"TPU Default",  // nome
-     55.0,           // temperatura_alvo
-     3.0,            // histerese_temp
-     480,            // tempo_total_min (8h)
-     20,             // tempo_preaquecimento_min
-     45,             // ciclo_agitacao_min
-     60,             // duracao_agitacao_seg
-     60,             // ciclo_exaustao_min
-     120,            // duracao_exaustao_seg
-     35.0},          // umidade_exaustao
-
-    {"Nylon (PA) Default",  // nome
-     75.0,                  // temperatura_alvo
-     5.0,                   // histerese_temp
-     720,                   // tempo_total_min (12h)
-     30,                    // tempo_preaquecimento_min
-     30,                    // ciclo_agitacao_min
-     60,                    // duracao_agitacao_seg
-     30,                    // ciclo_exaustao_min
-     180,                   // duracao_exaustao_seg
-     15.0}                  // umidade_exaustao
-};
+const DryProfile dry_profiles[] = {{
+                                       "ABS Default",  // nome
+                                       80.0,           // temperatura_alvo
+                                       5.0,            // histerese_temp
+                                       360,            // tempo_total_min
+                                       30,   // tempo_preaquecimento_min
+                                       20,   // ciclo_agitacao_min
+                                       60,   // duracao_agitacao_seg
+                                       30,   // ciclo_exaustao_min
+                                       120,  // duracao_exaustao_seg
+                                   },
+                                   {
+                                       "PLA Default",  // nome
+                                       50.0,           // temperatura_alvo
+                                       2.0,            // histerese_temp
+                                       240,            // tempo_total_min (4h)
+                                       15,   // tempo_preaquecimento_min
+                                       30,   // ciclo_agitacao_min
+                                       60,   // duracao_agitacao_seg
+                                       60,   // ciclo_exaustao_min
+                                       120,  // duracao_exaustao_seg
+                                   },
+                                   {
+                                       "PETG Default",  // nome
+                                       65.0,            // temperatura_alvo
+                                       3.0,             // histerese_temp
+                                       300,             // tempo_total_min (5h)
+                                       20,   // tempo_preaquecimento_min
+                                       30,   // ciclo_agitacao_min
+                                       60,   // duracao_agitacao_seg
+                                       45,   // ciclo_exaustao_min
+                                       120,  // duracao_exaustao_seg
+                                   },
+                                   {
+                                       "TPU Default",  // nome
+                                       55.0,           // temperatura_alvo
+                                       3.0,            // histerese_temp
+                                       480,            // tempo_total_min (8h)
+                                       20,   // tempo_preaquecimento_min
+                                       45,   // ciclo_agitacao_min
+                                       60,   // duracao_agitacao_seg
+                                       60,   // ciclo_exaustao_min
+                                       120,  // duracao_exaustao_seg
+                                   },
+                                   {
+                                       "Nylon (PA) Default",  // nome
+                                       75.0,  // temperatura_alvo
+                                       5.0,   // histerese_temp
+                                       720,   // tempo_total_min (12h)
+                                       30,    // tempo_preaquecimento_min
+                                       30,    // ciclo_agitacao_min
+                                       60,    // duracao_agitacao_seg
+                                       30,    // ciclo_exaustao_min
+                                       180,   // duracao_exaustao_seg
+                                   }};
 
 const int num_profiles = sizeof(dry_profiles) / sizeof(DryProfile);
 int current_profile_index = 0;  // Default to the first profile (ABS)
