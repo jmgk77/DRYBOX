@@ -22,3 +22,7 @@
 * [TEMP/HUMIDTY SENSOR](https://pt.aliexpress.com/item/1005009436825800.html)
 
 * [THREADED INSERTS](https://pt.aliexpress.com/item/1005008666672949.html)
+
+![5028508411666041614](https://github.com/user-attachments/assets/9b974aaa-467c-44ba-a33f-4f70752442f6)
+
+![5028508411666041613](https://github.com/user-attachments/assets/18a33049-ba05-400a-8d1e-2e25acbca712)
