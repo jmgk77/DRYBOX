@@ -32,6 +32,8 @@ void setup() {
 
   init_bme280();
 
+  init_loadcell();
+
   oled_clear();
 
   init_dry();

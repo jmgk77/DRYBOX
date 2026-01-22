@@ -18,6 +18,7 @@
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <ESPAsyncWiFiManager.h>
+#include <HX711.h>
 #include <LittleFS.h>
 #include <OneButton.h>
 #include <PicoMQTT.h>
@@ -49,6 +50,7 @@
 #include "datetime.cpp"
 #include "dry.cpp"
 #include "dump.cpp"
+#include "loadcell.cpp"
 #include "logger.cpp"
 #include "mqtt.cpp"
 #include "oled.cpp"

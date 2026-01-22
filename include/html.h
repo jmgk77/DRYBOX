@@ -17,6 +17,10 @@
   VAR = request->hasParam(#VAR, true)                                         \
             ? (request->getParam(#VAR, true)->value() == "on" ? true : false) \
             : false;
+#define FORM_SAVE_FLOAT(VAR)                                   \
+  VAR = request->hasParam(#VAR, true)                          \
+            ? request->getParam(#VAR, true)->value().toFloat() \
+            : 0;
 
 #define FORM_START(URL) \
   s += "<form action='" + String(URL) + "' method='POST'>\n";
@@ -24,6 +28,10 @@
   s += "<label for='" + String(#VAR) + "' name='" + String(#VAR) + "'>" +  \
        String(TXT) + ":</label><input type='text' name='" + String(#VAR) + \
        "' value='" + VAR + "'><br>\n";
+#define FORM_ASK_FLOAT(VAR, TXT, PREC)                                     \
+  s += "<label for='" + String(#VAR) + "' name='" + String(#VAR) + "'>" +  \
+       String(TXT) + ":</label><input type='text' name='" + String(#VAR) + \
+       "' value='" + String(VAR, PREC) + "'><br>\n";
 #define FORM_ASK_BOOL(VAR, TXT)                                                \
   s += "<label for='" + String(#VAR) + "' name='" + String(#VAR) + "'>" +      \
        String(TXT) + ":</label><input type='checkbox' name='" + String(#VAR) + \

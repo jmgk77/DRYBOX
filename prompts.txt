@@ -1,0 +1,14 @@
+This project is a firmware for a esp8266 based filament dryer. The filament dryer firmware, currently, control 2 relays (heating and fan), a sensor for humidity and temperature, and a servo-operated vent. It interface via a web interface, as well as a small oled display and a single button.
+
+It use a unusual structure in its source code. The main.cpp include all others .cpp files, that reside in the /include directory. In practice, is as if the whole project is a big file during compilation. Altought unusual, it avoid problems with definitions. It should stay this way.
+
+What we need now is support for a new piece of hardware: a load cell. The objetive is weight the spool of filament at start of the drying process, monitoring its weight loss. This new information will be used to abort the drying process when no more humidity is being removed from the filament. The porcentage of weight lost will be should both in the web interface, as well as in the oled display.
+
+A file called loadcell.cpp already exist, with the pin definitions.
+
+This implementation should be made in several steps: 1) add a web handler to just show the current weight in load cell; 2) add structures, or modify existing ones, to keep track of the weight loss; 3) display this info in the oled; 4) display a graph of weight loss in the web interface, like already is made for temperature and humidity; 5) enable the option for a "smart early termination" in drying routines in the web interface (a checkbox?) and implement it.
+
+Now, i want you to analise the whole souce code in /src and /include folders, and analyse the viability of the plan above. I will tell you when we pass to step 1.
+
+-----------------------------------
+
