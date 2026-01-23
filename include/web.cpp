@@ -71,8 +71,9 @@ void __handle_root(AsyncWebServerRequest* request) {
   if (f) {
     // Seek to the position of the last TH_HISTORY records from the end of the
     // file
-    if (f.size() > sizeof(TH_INFO) * TH_HISTORY) {
-      f.seek(-sizeof(TH_INFO) * TH_HISTORY, SeekEnd);
+    size_t history_size = sizeof(TH_INFO) * TH_HISTORY;
+    if (f.size() > history_size) {
+      f.seek(f.size() - history_size, SeekSet);
     }
 
     TH_INFO history_buffer;
@@ -100,8 +101,9 @@ void __handle_root(AsyncWebServerRequest* request) {
   // Re-open file and print humidity data
   f = LittleFS.open(th_log_name, "r");
   if (f) {
-    if (f.size() > sizeof(TH_INFO) * TH_HISTORY) {
-      f.seek(-sizeof(TH_INFO) * TH_HISTORY, SeekEnd);
+    size_t history_size = sizeof(TH_INFO) * TH_HISTORY;
+    if (f.size() > history_size) {
+      f.seek(f.size() - history_size, SeekSet);
     }
 
     TH_INFO history_buffer;
