@@ -12,3 +12,15 @@ Now, i want you to analise the whole souce code in /src and /include folders, an
 
 -----------------------------------
 
+I am working on the ESP8266 filament dryer firmware. We are implementing a load cell to monitor weight loss.
+
+Current Status:
+1. Hardware driver (`loadcell.cpp`) is implemented using a non-blocking Ticker and rolling average.
+2. Configuration (`config.cpp`) saves `loadcell_scale` and `loadcell_offset`.
+3. Web Interface (`web.cpp`) displays the current raw weight and allows calibration.
+4. Logging (`log.cpp`) has been updated to support rotating file logs on LittleFS.
+
+We are now ready to proceed to **Step 2** of the plan:
+"Add structures, or modify existing ones, to keep track of the weight loss."
+
+Please analyze the source code (specifically `dry.cpp` and `logger.cpp`) and help me implement the logic to capture the initial weight when a cycle starts and track the weight history.

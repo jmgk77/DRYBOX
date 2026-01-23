@@ -12,6 +12,10 @@ void setup() {
 
   LittleFS.begin();
 
+#if defined(DEBUG) && defined(LOG_TO_FILE)
+  init_file_logging();
+#endif
+
   init_config();
 
   dump_esp8266();
