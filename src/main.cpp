@@ -55,6 +55,8 @@ void loop() {
 
   handle_oled();
 
+  handle_loadcell();
+
   handle_dry();
 
   handle_button();

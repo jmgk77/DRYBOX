@@ -2,31 +2,16 @@
 
 #define LOADCELL_DAT 12  // D6
 #define LOADCELL_CLK 13  // D7
-#define LOADCELL_READ_INTERVAL 0.1
+#define LOADCELL_READ_INTERVAL 1.0
 
 HX711 loadcell;
 Ticker loadcell_timer;
 
 volatile float _cached_weight = 0.0f;
+bool _tare_request = false;
+volatile bool _read_request = false;
 
-void __loadcell_callback() {
-  // Non-blocking check. If hardware is ready, read it.
-  if (loadcell.is_ready()) {
-    // Rolling average of 5 samples to smooth noise without blocking
-    // get_units(5) would block for ~500ms, triggering WDT
-    static float samples[5];
-    static uint8_t idx = 0;
-    static uint8_t count = 0;
-
-    samples[idx] = loadcell.get_units(1);
-    idx = (idx + 1) % 5;
-    if (count < 5) count++;
-
-    float sum = 0;
-    for (uint8_t i = 0; i < count; i++) sum += samples[i];
-    _cached_weight = sum / float(count);
-  }
-}
+void __loadcell_callback() { _read_request = true; }
 
 void init_loadcell() {
   loadcell.begin(LOADCELL_DAT, LOADCELL_CLK);
@@ -39,3 +24,25 @@ void init_loadcell() {
 }
 
 float get_weight() { return _cached_weight; }
+
+void tare_loadcell() { _tare_request = true; }
+
+void handle_loadcell() {
+  if (_tare_request) {
+    _tare_request = false;
+    loadcell_timer.detach();
+    yield();          // Feed watchdog before blocking operation
+    loadcell.tare();  // Reset the scale to 0
+    config.loadcell_offset = loadcell.get_offset();
+    save_config();
+    _cached_weight = 0.0f;
+    LOG_MSG("LOADCELL TARED. New Offset: %ld", config.loadcell_offset);
+    loadcell_timer.attach_scheduled(LOADCELL_READ_INTERVAL,
+                                    __loadcell_callback);
+  }
+
+  if (_read_request) {
+    _read_request = false;
+    _cached_weight = loadcell.get_units(5);
+  }
+}

@@ -15,6 +15,7 @@ void servo_off();
 bool get_servo_status();
 const char* get_current_profile_name();
 float get_weight();
+void tare_loadcell();
 
 String __add_buttons() { return FPSTR(html_buttons); }
 
@@ -198,8 +199,10 @@ void __handle_config(AsyncWebServerRequest* request) {
 
     FORM_ASK_FLOAT(config.loadcell_scale, "Load Cell Scale", 6)
     FORM_ASK_VALUE(config.loadcell_offset, "Load Cell Offset")
-
     FORM_END("SALVAR")
+
+    s += "<br><a href='/command?tare=1' class='button-link'><button "
+         "type='button'>AUTO TARE</button></a><br><br>";
 
     // update
     s += "<br>\n<form action='/update?name=firmware' "
@@ -238,6 +241,8 @@ void __handle_command(AsyncWebServerRequest* request) {
     servo_on();
   } else if (request->hasParam("vent_close")) {
     servo_off();
+  } else if (request->hasParam("tare")) {
+    tare_loadcell();
   } else {  // default
   }
 

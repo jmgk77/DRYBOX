@@ -8,6 +8,7 @@ void fan_off();
 bool get_fan();
 void servo_on();
 void servo_off();
+float get_weight();
 
 // --- Parâmetros do Ciclo de Secagem ---
 // No futuro, estes valores serão carregados de um arquivo de perfil.
@@ -90,6 +91,10 @@ DryProfile current_profile = dry_profiles[0];
 enum class DryCycleState { IDLE, PREHEATING, DRYING, DONE };
 DryCycleState current_dry_state = DryCycleState::IDLE;
 
+// --- Weight Tracking ---
+float initial_weight = 0.0;
+float current_weight_loss = 0.0;
+
 Ticker dry_timer;
 
 // Time counters (in seconds). `volatile` is crucial as they are modified in an
@@ -153,6 +158,10 @@ void start_dry_cycle() {
   // Initialize all counters from the profile
   remaining_time_sec = current_profile.tempo_total_min * 60;
   preheat_time_sec = current_profile.tempo_preaquecimento_min * 60;
+
+  initial_weight = get_weight();
+  current_weight_loss = 0.0;
+
   __reset_exhaust_timer();
   __reset_agitation_timer();
   current_dry_state = DryCycleState::PREHEATING;
@@ -175,6 +184,11 @@ String get_remaining_time_str() {
   char buf[12];  // Buffer maior para segurança (HH:MM\0)
   snprintf(buf, sizeof(buf), "%02u:%02u", hours, minutes);
   return String(buf);
+}
+
+float get_weight_loss_percent() {
+  if (initial_weight <= 0.001) return 0.0;
+  return (current_weight_loss / initial_weight) * 100.0;
 }
 
 String get_dry_cycle_state_str() {
@@ -221,6 +235,12 @@ void handle_dry() {
       heater_on();
     } else if (current_temp >= current_profile.temperatura_alvo) {
       heater_off();
+    }
+
+    // 2. Update Weight Loss
+    float w = get_weight();
+    if (initial_weight > 0.0) {
+      current_weight_loss = initial_weight - w;
     }
 
     // 2. Lógica de transição de estados e eventos
