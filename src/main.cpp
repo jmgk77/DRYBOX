@@ -36,8 +36,6 @@ void setup() {
 
   init_bme280();
 
-  init_loadcell();
-
   oled_clear();
 
   init_dry();
@@ -54,8 +52,6 @@ void loop() {
   handle_mqtt();
 
   handle_oled();
-
-  handle_loadcell();
 
   handle_dry();
 

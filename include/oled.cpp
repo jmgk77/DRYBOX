@@ -36,7 +36,6 @@ void oled_clear() {
 const char* get_current_profile_name();
 String get_dry_cycle_state_str();
 String get_remaining_time_str();
-float get_weight_loss_percent();
 DryCycleState get_dry_cycle_state();
 
 void oled_th_status() {
@@ -65,15 +64,6 @@ void oled_th_status() {
   display.getTextBounds(time_str.c_str(), 0, 0, &x1, &y1, &w, &h);
   display.setCursor((SCREEN_WIDTH - w) / 2, 35);
   display.println(time_str);
-
-  // --- Weight Loss (Between Time and Footer) ---
-  if (get_dry_cycle_state() != DryCycleState::IDLE) {
-    char w_buf[16];
-    snprintf(w_buf, sizeof(w_buf), "Loss: %.1f%%", get_weight_loss_percent());
-    display.getTextBounds(w_buf, 0, 0, &x1, &y1, &w, &h);
-    display.setCursor((SCREEN_WIDTH - w) / 2, 46);
-    display.print(w_buf);
-  }
 
   // --- Temperature and Humidity (Bottom) ---
   char th_buf[20];

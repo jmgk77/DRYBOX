@@ -14,8 +14,6 @@ void servo_on();
 void servo_off();
 bool get_servo_status();
 const char* get_current_profile_name();
-float get_weight();
-void tare_loadcell();
 
 String __add_buttons() { return FPSTR(html_buttons); }
 
@@ -143,7 +141,6 @@ void __handle_info(AsyncWebServerRequest* request) {
   response->printf("FAN: %s<br>", get_fan() ? "ON" : "OFF");
   response->printf("TEMPERATURE: %.2f<br>", get_temperature());
   response->printf("HUMIDITY: %.2f<br>", get_humidity());
-  response->printf("WEIGHT: %.2f g<br>", get_weight());
   response->print("<br></div>");
 
   response->printf("IP: <i>%s</i><br>\n", WiFi.localIP().toString().c_str());
@@ -179,9 +176,6 @@ void __handle_config(AsyncWebServerRequest* request) {
     FORM_SAVE_INT(config.mqtt_server_port)
     FORM_SAVE_STRING(config.mqtt_server_username)
     FORM_SAVE_STRING(config.mqtt_server_password)
-    FORM_SAVE_FLOAT(config.loadcell_scale)
-    FORM_SAVE_INT(config.loadcell_offset)
-    FORM_SAVE_FLOAT(config.loadcell_temp_coeff)
 
     // save data to config
     save_config();
@@ -198,13 +192,7 @@ void __handle_config(AsyncWebServerRequest* request) {
     FORM_ASK_VALUE(config.mqtt_server_username, "MQTT remote username")
     FORM_ASK_VALUE(config.mqtt_server_password, "MQTT remote password")
 
-    FORM_ASK_FLOAT(config.loadcell_scale, "Load Cell Scale", 6)
-    FORM_ASK_VALUE(config.loadcell_offset, "Load Cell Offset")
-    FORM_ASK_FLOAT(config.loadcell_temp_coeff, "Temp Coeff (g/C)", 6)
     FORM_END("SALVAR")
-
-    s += "<br><a href='/command?tare=1' class='button-link'><button "
-         "type='button'>AUTO TARE</button></a><br><br>";
 
     // update
     s += "<br>\n<form action='/update?name=firmware' "
@@ -243,8 +231,6 @@ void __handle_command(AsyncWebServerRequest* request) {
     servo_on();
   } else if (request->hasParam("vent_close")) {
     servo_off();
-  } else if (request->hasParam("tare")) {
-    tare_loadcell();
   } else {  // default
   }
 
@@ -381,11 +367,6 @@ void init_web() {
   server.on("/reboot", HTTP_ANY, __handle_reboot);
   server.on("/reset", HTTP_ANY, __handle_reset);
   server.on("/command", HTTP_ANY, __handle_command);
-  server.on("/weight", HTTP_ANY, [](AsyncWebServerRequest* request) {
-    char buf[16];
-    snprintf(buf, sizeof(buf), "%.2f", get_weight());
-    request->send(200, "text/plain", buf);
-  });
 #ifdef WWW_FILESERVER
   server.on("/files", HTTP_ANY, __handle_files);
   server.on(

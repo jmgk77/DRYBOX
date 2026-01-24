@@ -7,7 +7,6 @@
 struct TH_INFO {
   float temperature;
   float humidity;
-  float weight;
 };
 
 TH_INFO th_info[MAX_TH_INFO];
@@ -36,7 +35,6 @@ void __th_callback() {
   if ((th_index < MAX_TH_INFO)) {
     th_info[th_index].temperature = get_temperature();
     th_info[th_index].humidity = get_humidity();
-    th_info[th_index].weight = get_weight();
     th_index++;
   } else {
     __do_dump_log = true;

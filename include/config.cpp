@@ -8,10 +8,6 @@ struct config_data {
   unsigned int mqtt_server_port;
   char mqtt_server_username[64];
   char mqtt_server_password[64];
-  float loadcell_scale;
-  long loadcell_offset;
-  float loadcell_temp_coeff;
-  float tare_temperature;
 };
 struct config_data config;
 
@@ -28,10 +24,6 @@ void save_config() {
   doc["mqtt_server_port"] = config.mqtt_server_port;
   doc["mqtt_server_username"] = config.mqtt_server_username;
   doc["mqtt_server_password"] = config.mqtt_server_password;
-  doc["loadcell_scale"] = config.loadcell_scale;
-  doc["loadcell_offset"] = config.loadcell_offset;
-  doc["loadcell_temp_coeff"] = config.loadcell_temp_coeff;
-  doc["tare_temperature"] = config.tare_temperature;
 
   if (serializeJson(doc, configFile) == 0) {
     LOG_MSG("Failed to write to config file");
@@ -43,10 +35,6 @@ void default_config() {
   config = {};
   strcpy(config.device_name, DEFAULT_DEVICE_NAME);
   config.mqtt_server_port = 1883;
-  config.loadcell_scale = 400.0f;
-  config.loadcell_offset = 0;
-  config.loadcell_temp_coeff = 0.0f;
-  config.tare_temperature = 25.0f;
 }
 
 void init_config() {
@@ -70,10 +58,6 @@ void init_config() {
                 sizeof(config.mqtt_server_username));
         strlcpy(config.mqtt_server_password, doc["mqtt_server_password"] | "",
                 sizeof(config.mqtt_server_password));
-        config.loadcell_scale = doc["loadcell_scale"] | 400.0f;
-        config.loadcell_offset = doc["loadcell_offset"] | 0;
-        config.loadcell_temp_coeff = doc["loadcell_temp_coeff"] | 0.0f;
-        config.tare_temperature = doc["tare_temperature"] | 25.0f;
       }
       configFile.close();
     }
