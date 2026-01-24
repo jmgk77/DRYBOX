@@ -8,17 +8,18 @@ OneButton button;
 void next_profile();
 
 void __single_click() {
-  oled_status = true;
   LOG_MSG(".");
+  oled_status = true;
 }
 
 void __double_click() {
+  LOG_MSG(".");
   next_profile();
   oled_status = true;
-  LOG_MSG(".");
 }
 
 void __long_press() {
+  LOG_MSG(".");
   if (current_dry_state == DryCycleState::IDLE ||
       current_dry_state == DryCycleState::DONE) {
     start_dry_cycle();
@@ -26,7 +27,6 @@ void __long_press() {
     stop_dry_cycle();
   }
   oled_status = true;
-  LOG_MSG(".");
 }
 
 void init_button() {

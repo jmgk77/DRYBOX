@@ -15,24 +15,24 @@
 
 void heater_on() {
   digitalWrite(HEATER_PIN, RELAY_ON);
-  // LOG_MSG("HEATER ON");
+  LOG_MSG("HEATER ON");
 }
 
 void heater_off() {
   digitalWrite(HEATER_PIN, RELAY_OFF);
-  // LOG_MSG("HEATER OFF");
+  LOG_MSG("HEATER OFF");
 }
 
 bool get_heater() { return digitalRead(HEATER_PIN) == RELAY_ON; }
 
 void fan_on() {
   digitalWrite(FAN_PIN, RELAY_ON);
-  // LOG_MSG("FAN ON");
+  LOG_MSG("FAN ON");
 };
 
 void fan_off() {
   digitalWrite(FAN_PIN, RELAY_OFF);
-  // LOG_MSG("FAN OFF");
+  LOG_MSG("FAN OFF");
 };
 
 bool get_fan() { return digitalRead(FAN_PIN) == RELAY_ON; }
