@@ -181,6 +181,7 @@ void __handle_config(AsyncWebServerRequest* request) {
     FORM_SAVE_STRING(config.mqtt_server_password)
     FORM_SAVE_FLOAT(config.loadcell_scale)
     FORM_SAVE_INT(config.loadcell_offset)
+    FORM_SAVE_FLOAT(config.loadcell_temp_coeff)
 
     // save data to config
     save_config();
@@ -199,6 +200,7 @@ void __handle_config(AsyncWebServerRequest* request) {
 
     FORM_ASK_FLOAT(config.loadcell_scale, "Load Cell Scale", 6)
     FORM_ASK_VALUE(config.loadcell_offset, "Load Cell Offset")
+    FORM_ASK_FLOAT(config.loadcell_temp_coeff, "Temp Coeff (g/C)", 6)
     FORM_END("SALVAR")
 
     s += "<br><a href='/command?tare=1' class='button-link'><button "
