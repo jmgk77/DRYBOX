@@ -284,44 +284,62 @@ void __handle_files(AsyncWebServerRequest* request) {
   if (request->hasParam("n")) {
     // download
     String fileName = request->getParam("n")->value();
+    // LittleFS requires an absolute path, ensure it starts with a '/'
+    if (!fileName.startsWith("/")) {
+      fileName = "/" + fileName;
+    }
     LOG_MSG("Download: %s", fileName.c_str());
     request->send(LittleFS, fileName, "application/octet-stream");
   } else if (request->hasParam("x")) {
     // delete
     String fileName = request->getParam("x")->value();
+    // LittleFS requires an absolute path, ensure it starts with a '/'
+    if (!fileName.startsWith("/")) {
+      fileName = "/" + fileName;
+    }
     LOG_MSG("Delete: %s", fileName.c_str());
     LittleFS.remove(fileName);
     request->redirect("/files");
   } else {
     // dir
     LOG_MSG("Dir:");
-    String s;
-    s += "<div style='border: 1px solid black'>\n<div style='border: 1px "
-         "solid "
-         "black'>\n";
+    AsyncResponseStream* response = request->beginResponseStream("text/html");
+    response->print(FPSTR(html_header));
+    response->print(
+        "<div style='border: 1px solid black'>\n<div style='border: 1px "
+        "solid "
+        "black'>\n");
     // scan files
     Dir dir = LittleFS.openDir("");
     while (dir.next()) {
       if (dir.isFile()) {
-        LOG_MSG("\t%s", dir.fileName().c_str());
-        s += "<a download='" + dir.fileName() +
-             "' href='files?n=" + dir.fileName() + "'>" + dir.fileName() +
-             "</a>";
-        s += "    (" + __b_kb_mb_gb(dir.fileSize()) + ")    ";
+        // LOG_MSG("\t%s", dir.fileName().c_str());
+        response->print("<a download='");
+        response->print(dir.fileName());
+        response->print("' href='files?n=");
+        response->print(dir.fileName());
+        response->print("'>");
+        response->print(dir.fileName());
+        response->print("</a>    (");
+        response->print(__b_kb_mb_gb(dir.fileSize()));
+        response->print(")    ");
         const time_t t = dir.fileTime();
-        s += String(ctime(&t));
-        s += "<a href='files?x=" + dir.fileName() + "'>x</a><br>\n";
+        response->print(ctime(&t));
+        response->print("<a href='files?x=");
+        response->print(dir.fileName());
+        response->print("'>x</a><br>\n");
       }
     }
     // upload form
-    s += "</div>\n<form action='/upload' method='POST' "
-         "enctype='multipart/form-data'><input type='file' name='name'><input "
-         "class='button' type='submit' value='UPLOAD'></form>\n</div><br>";
+    response->print(
+        "</div>\n<form action='/upload' method='POST' "
+        "enctype='multipart/form-data'><input type='file' name='name'><input "
+        "class='button' type='submit' value='UPLOAD'></form>\n</div><br>");
     // buttons
-    s += __add_buttons();
+    response->print(__add_buttons());
+    response->print(FPSTR(html_footer));
     // send dir page
-    request->send(200, "text/html",
-                  String(FPSTR(html_header)) + s + String(FPSTR(html_footer)));
+    request->send(response);
   }
 }
 

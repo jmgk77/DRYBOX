@@ -26,9 +26,12 @@
 
 #define DEFAULT_DEVICE_NAME "DRYBOX"
 
-#define DEBUG
+// #define FORMAT_LITTLEFS  // Uncomment to format filesystem on next boot. USE
+// WITH CAUTION!
+
+// #define DEBUG
 // #define DEBUG_VERBOSE
-#define ENABLE_EXTRA_DISCOVERY
+// #define ENABLE_EXTRA_DISCOVERY
 #define WWW_FILESERVER
 
 //

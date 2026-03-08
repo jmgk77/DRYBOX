@@ -60,6 +60,8 @@ void init_logger() {
 void handle_logger() {
   if (__do_dump_log) {
     __do_dump_log = false;
-    __dump_log();
+    if (th_index >= MAX_TH_INFO) {
+      __dump_log();
+    }
   }
 }

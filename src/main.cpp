@@ -12,6 +12,10 @@ void setup() {
 
   LittleFS.begin();
 
+#ifdef FORMAT_LITTLEFS
+  LittleFS.format();
+#endif
+
 #if defined(DEBUG) && defined(LOG_TO_FILE)
   init_file_logging();
 #endif
