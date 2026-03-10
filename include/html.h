@@ -46,7 +46,9 @@
       String(BTN) + "'></form>\n";
 
 const char html_header[] PROGMEM = R""""(
-<!DOCTYPE html><html lang='pt-br'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta http-equiv='cache-control' content='no-cache, no-store, must-revalidate'><meta http-equiv='refresh' content='30'/><script src='https://cdn.jsdelivr.net/npm/chart.js'></script><style>.button-link{display:inline-block;padding:6px 12px;margin-bottom:0;font-size:14px;font-weight:400;line-height:1.42857143;text-align:center;white-space:nowrap;vertical-align:middle;cursor:pointer;text-decoration:none}</style><title>DRYBOX</title></head><body>
+<!DOCTYPE html><html data-theme="dark" lang='pt-br'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta http-equiv='cache-control' content='no-cache, no-store, must-revalidate'><meta http-equiv='refresh' content='30'/><script src='https://cdn.jsdelivr.net/npm/chart.js'></script><style>.button-link{display:inline-block;padding:6px 12px;margin-bottom:0;font-size:14px;font-weight:400;line-height:1.42857143;text-align:center;white-space:nowrap;vertical-align:middle;cursor:pointer;text-decoration:none}</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.zinc.min.css"/>
+<title>DRYBOX</title></head><body>
 )"""";
 
 const char html_root[] PROGMEM = R""""(
